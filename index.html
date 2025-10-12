@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html id="html" lang="en">
+	<head>
+		<title>csvHorse</title>
+		<link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="csvHorse" />
+		<link rel="manifest" href="/site.webmanifest" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Sono:wght@200..800&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="css/appearance.css">
+		<link rel="stylesheet" href="css/editor.css">
+		<link rel="stylesheet" href="css/tray.css">
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<header>
+			<img src="horse.png" alt="csvHorse logo">
+			<h1>csvHorse</h1>
+			<div class="toolbar">
+				<a title="Reset csvHorse" href="#" onclick="ui.clearAll()">Reset</a>
+				<a title="See an example" href="#" onclick="ui.example()">Example</a>
+				<a title="Toggle dark mode" class="button invert" href="#" onclick="ui.dark()"><span class="dark">Dark</span><span class="light">Light</span> Mode</a>
+				<a title="Open the help" href="#" onclick="ui.help()" class="button">Help</a>
+			</div>
+		</header>
+		<main>
+			<section id="ui" class="normal">
+				<div class="pane" id="input">
+					<div id="recipe">
+						<strong id="label-recipe">Recipe</strong>
+						<div class="toolbar hideonwide">
+							<a title="Toggle text wrapping in the Recipe pane" id="rec-wrap-button" href="#" onclick="ui.wrap('rec')" class="button">Wrap</a>
+						</div>
+						<textarea id="rec" class="mono" aria-labelledby="label-recipe" placeholder="Type the recipe here using one directive on each line"></textarea>
+					</div>
+					<div id="variables" class="vars-small">
+						<strong id="label-variables">Variables</strong>
+						<div class="toolbar hideonwide">
+							<a id="vars-large-button" title="Make the variables panel large" class="button invert" href="#" onclick="ui.vars('vars-large')">Large</a>
+							<a id="vars-small-button" title="Make the variables small" class="button invert" href="#" onclick="ui.vars('vars-small')">Small</a>
+						</div>
+						<textarea id="vars" class="mono" aria-labelledby="label-variables" placeholder="Variables in the form 'key=value'"></textarea>
+					</div>
+				</div>
+				<div class="gripper" id="gripper" onmousedown="ui.dragStart(event);"><span>&vellip;</span></div>
+				<div class="pane" id="output">
+					<strong id="label-output">Output</strong>
+					<div class="toolbar hideonwide">
+						<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="#" onclick="ui.wrap('out')" class="button">Wrap</a>
+					</div>
+					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="Transformed text will appear here"></textarea>
+					<div class="scrollpane hidden" id="info"></div>
+					<ul id="log"></ul>
+				</div>
+			</section>
+			<section id="lightbox" onclick="ui.help()">
+			</section>
+			<section id="tray">
+				<div class="tabs">
+					<ul id="_tray-ul">
+						<li id="tab-commands" class="selected"><a href="#" onclick="ui.tab('_tray','commands')">Recipes</a></li>
+						<li id="tab-about"><a href="#" onclick="ui.tab('_tray','about')">About</a></li>
+					</ul>
+					<div class="toolbar">
+						<a title="Close this tray" href="#" onclick="ui.help()">&times; Close</a>
+					</div>
+				</div>
+					<div id="_tray"><div id="_tray-commands"></div>
+						<div id="_tray-about" class="hidden">
+							<img src="horse.png" alt="stringhorse logo">
+							<h1>csvHorse</h1>
+							<span class="version"></span><br>
+							<p>
+								<strong>csvHorse</strong> generates CSV files from simple recipes.
+							</p>							
+							<p>
+								<a title="See an example" href="#" onclick="ui.help();ui.example()">See an example</a>
+							</p>
+							<hr>
+							<p>
+								Officially on the web at <a title="csvHorse web site" href="https://csvhorse.mcglashan.net/">csvhorse.mcglashan.net</a>
+							</p>
+							<p>
+								All the source code on github at 
+								<a title="Source code on github.com" href="https://github.com/davidmcglashan/csvhorse">github.com/davidmcglashan/stringhorse</a> (<a title="Creative Commons license details" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal</a>)
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<strong class="version"></strong> | &copy; <span class="year"></span> <a href="https://david.mcglashan.net/">David McGlashan</a>
+		</footer>
+	</body>
+	<script type="text/javascript" src="js/ui.js"></script>
+	<script type="text/javascript" src="js/commands.js"></script>
+	<script type="text/javascript" src="js/recipe.js"></script>
+	<script type="text/javascript">
+		ui.init()
+	</script>
+</html>

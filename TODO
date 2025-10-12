@@ -1,0 +1,24 @@
+VERSIONING
+----------
+[major].[minor].[point]
+ - Major releases see significant change to the feature set e.g. multiple minors.
+ - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
+ - Point releases for bug fixes, UI modifications, meta and build changes.
+
+**** FUNCTIONS *********************************************************
+
+**** UI *************************
+
+**** PROGRAMMING *************************
+
+**** IDEAS *************************************************************
+- saved recipes - it's just a JSON file into localstorage
+  - import/export state - keeps recipes and variables
+
+- commands to manage CSV files - probably CSVhorse: an app to deal only with CSV
+  - move a column
+  - extract a column
+  - sort by a column
+  - transform a column a la stringhorse
+  
+- JSONhorse: same idea but for JSON

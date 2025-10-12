@@ -1,0 +1,119 @@
+/* The UI section uses flexbox to lay out its two panes. */
+section#ui {
+	position: relative;
+	top: -2em;
+	width: 100%;
+	bottom: 0;
+	height: calc(100vh - 5.25em);
+	background-color: var(--ui-background);
+}
+	/* The immediate <div> children are the two panes. They need to be white and have borders. */
+	section#ui > div.pane {
+		position: absolute; 
+		padding: 1em 0.5em;
+		top: 0;
+		bottom: 0;
+		width: auto;
+	}
+
+	section#ui > div#input {
+		left: 0;
+		right: calc(50vw + 1px);
+	}
+	section#ui > div#output {
+		left: calc(50vw + 7px);
+		right: 0;
+	}
+
+	section#ui > div.gripper {
+		position: absolute; 
+		min-width: 4px;
+		top: 0;
+		bottom: 0;
+		cursor: ew-resize;
+		display: flex;
+		align-items: center;
+		left: calc(50vw);
+	}
+	section#ui > div.gripper:hover {
+		background-color: var(--button-bg);
+		color: var(--button-fg)
+	}
+
+	/* The input column is  split into two. */
+	section#ui > div#input {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		padding: 0;
+	}
+		section#ui > div#input > div {
+			flex: 10;
+			position: relative;
+			padding: 1em 0.5em;
+		}
+		section#ui > div#input > div#variables textarea {
+			bottom: 0;
+		}
+
+	/* Make all the toolbar buttons a bit smaller in the UI section to save a bit of space. */
+	section#ui .toolbar .button {
+		font-size: 0.8em;
+	}
+
+	/* Prevent the toolbar buttons of the rightmost toolbar from touching the edge of the screen. */
+	section#ui > div#output .toolbar {
+		right: 0.5em;
+	}
+
+	/* Make the wrap buttons behave as toggles. The wrap class is applied when the button *isn't* functioning ... :| */
+	section#ui a.button.wrap {
+		background-color: var(--pane-bg);
+		border: 1px solid var(--pane-border);
+		color: var(--button-alt-fg);;
+	}
+
+	/* The variables window has two modes: small and large (which is half of the central-column). */
+	section#ui div#variables.vars-small {
+		flex: 3;
+	}
+
+	/* Show the buttons to change the variables pane size depending on its mode. */
+	section#ui div#variables.vars-small a#vars-small-button,
+	section#ui div#variables.vars-large a#vars-large-button {
+		display:none;
+	}
+
+	/* Make the UI copy in the variables pane ellipsify if its pane gets narrow. */
+	section#ui div#variables label {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-wrap: nowrap;
+	}
+
+	/* Textareas (very important to stringhorse!) fill their containers, have no borders, and gentle padding. */
+	section#ui textarea {
+		position: absolute;
+		top: 2.5em;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		resize: none;
+		padding: 0.5em;
+		background-color: var(--pane-bg);
+		color: var(--text-fg);
+		border: 1px solid var(--pane-border);
+	}
+		/* Wrapping can be disabled for textareas with this. */
+		section#ui textarea.wrap {
+			text-wrap: nowrap;
+		}
+
+	section#ui div#output ul#log {
+		position: absolute;
+		color: var(--log-fg);
+		bottom: 0;
+		left: 0;
+		padding-inline-start: 2em;
+	}
