@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.6",
+	version: "v0.0.7",
 
 	/*
 	* Executes the currently entered recipe.
@@ -76,7 +76,7 @@ const recipe = {
 			for ( let r=0; r<config.rows; r+=1 ) {
 				let column = {}
 				model.rows[r].columns[c] = column
-				column.content = spec.next()
+				column.content = spec.next( r+1 )
 			}
 		}
 
@@ -119,7 +119,7 @@ const recipe = {
 		if ( tokens[0].startsWith( '$' ) ) {
 			let value = recipe.variables[tokens[0].substr(1)]
 			if ( value ) {
-				spec = { compose: () => { return recipe.replacePatternsInString(value) } }
+				spec = { compose: ( row ) => { return recipe.replacePatternsInString( value, row ) } }
 			}
 		}
 
@@ -154,7 +154,7 @@ const recipe = {
 				return{ next: () => { return defn } }
 			}
 
-			spec = { compose: () => { return funcs[func.substr(0,brace)](defn.split(' ')[0]) } }
+			spec = { compose: ( row ) => { return funcs[func.substr(0,brace)]( defn.split(' ')[0], row ) } }
 		}
 
 		// If none of the above worked, create a simple next that returns the original definition string.
@@ -163,17 +163,17 @@ const recipe = {
 		}
 
 		// The default next() function calls compose(), unless modified by what follows ...
-		spec.next = function() { return this.compose() }
+		spec.next = function( row ) { return this.compose( row ) }
 
 		// Is there an empty keyword?
 		for ( let t=0; t<tokens.length; t+=1 ) {
 			if ( tokens[t] === 'empty' ) {
 				let pctage = parseInt(tokens[t+1])
-				spec.next = function() {
+				spec.next = function( row ) {
 					if ( random.get( 0, 100 ) < pctage ) {
 						return ''
 					} else {
-						return this.compose()
+						return this.compose( row )
 					}
 				}
 				break
@@ -205,7 +205,7 @@ const recipe = {
 	 * Checks the ins string for instances of any %pattern in vars and swaps in its
 	 * newly-generated value.
 	 */
-	replacePatternsInString: ( ins ) => {
+	replacePatternsInString: ( ins, row ) => {
 		// Patterns are variables prefixed with %. We want to generate a new result every time
 		// we do a substitution.
 		let index = 0
@@ -218,9 +218,10 @@ const recipe = {
 		}
 
 		// Let the funcs do their func'ing.
-		ins = funcs.rng( ins )
-		ins = funcs.lorem( ins )
-		ins = funcs.list( ins )
+		ins = funcs.rng( ins, row )
+		ins = funcs.lorem( ins, row )
+		ins = funcs.list( ins, row )
+		ins = funcs.count( ins, row )
 
 		// Send back the finished string
 		return ins
@@ -329,6 +330,30 @@ const directives = {
 };
 
 const funcs = {
+	/**
+	 * Implements a count by adding the passed-in row number to the start number defined in the func.
+	 */
+	count: ( ins, row=1 ) => {
+		let start = ins.indexOf( '@count(' )
+		while ( start !== -1 ) {
+			// Parses the content, expecting a number. 
+			let end = ins.indexOf( ')', start )
+			let val = ins.substr(start+7,end-start-7)
+			let num = parseInt(val)
+
+			// Any problems result in the original string being returned untouched.
+			if ( !isNaN(num) ) {
+				ins = ins.substr( 0,start ) + (num+row-1) + ins.substr( end+1 )
+			} else {
+				ins = ins.substr( 0,start ) + (row) + ins.substr( end+1 )
+			}
+
+			start = ins.indexOf( '@count(' )
+		}	
+
+		return ins	
+	},
+	
 	/**
 	 * Generates a random number based on the input of the line: @rng(1,10) => picks a number between 1 and 10
 	 */

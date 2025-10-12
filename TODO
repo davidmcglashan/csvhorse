@@ -8,29 +8,21 @@ VERSIONING
 **** Bugs ***********************
 - Wrap states are restored (not on stringhorse either)
 
-**** UI *************************
-- Run button
+**** Features *************************
 - HTML <table> view of the output
-
-**** PROGRAMMING *************************
-- rng column
-- lorem column
-- date column
-- numbers e.g. count rows but don't start from 1, skip one occasionally, etc.
-- headers - declared in defn - can be blank
-- 'order by' directive
+- Nicer run button
+- Icon
+- Help tray
 - comma detection in a single cell's output results in " escaping
+1.0
+- headers declared as directive
+- date column
+- 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
   - import/export state - keeps recipes and variables
-
-- commands to manage CSV files - probably CSVhorse: an app to deal only with CSV
-  - move a column
-  - extract a column
-  - sort by a column
-  - transform a column a la stringhorse
-  
-- JSONhorse: same idea but for JSON
+- skipping numbers on a @count() sequence
+- headers - declared in defn - can be blank
