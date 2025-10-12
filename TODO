@@ -20,6 +20,7 @@ VERSIONING
 - 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
+- number of words parameter(s) for @lorem
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage

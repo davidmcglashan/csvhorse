@@ -112,6 +112,11 @@ const recipe = {
 	 * Turns a string definition into a spec which can generate content in the CSV.
 	 */
 	processDefinition: ( defn ) => {
+		// A null definition results in an empty string.
+		if ( !defn ) {
+			return{ next: () => { return '' } }
+		}
+
 		let spec = null
 		let tokens = defn.split( ' ' )
 
@@ -338,6 +343,10 @@ const funcs = {
 		while ( start !== -1 ) {
 			// Parses the content, expecting a number. 
 			let end = ins.indexOf( ')', start )
+			if ( end === -1 ) {
+				return ins
+			}
+
 			let val = ins.substr(start+7,end-start-7)
 			let num = parseInt(val)
 
@@ -363,6 +372,9 @@ const funcs = {
 		while ( start !== -1 ) {
 			// Parses the content, expecting two comma-separated numbers. 
 			let end = ins.indexOf( ')', start )
+			if ( end === -1 ) {
+				return ins
+			}
 			let vals = ins.substr(start+5,end-start-5).split(',')
 			let result = random.get( parseInt(vals[0]), parseInt(vals[1]) )
 			
@@ -385,6 +397,10 @@ const funcs = {
 		while ( start !== -1 ) {
 			// Parses the content, expecting a number. 
 			let end = ins.indexOf( ')', start )
+			if ( end === -1 ) {
+				return ins
+			}
+
 			let val = ins.substr(start+7,end-start-7)
 
 			// An 'r' means random words from the sequence, 'c' means capitalise the first word (like a sentence)
