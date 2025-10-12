@@ -375,12 +375,18 @@ const funcs = {
 			if ( end === -1 ) {
 				return ins
 			}
+
 			let vals = ins.substr(start+5,end-start-5).split(',')
-			let result = random.get( parseInt(vals[0]), parseInt(vals[1]) )
-			
+			if ( vals.length !== 2 ) {
+				return ins
+			}
+
 			// Any problems result in the original string being returned untouched.
+			let result = random.get( parseInt(vals[0]), parseInt(vals[1]) )
 			if ( !isNaN(result) ) {
 				ins = ins.substr( 0,start ) + result + ins.substr( end+1 )
+			} else {
+				return ins
 			}
 
 			start = ins.indexOf( '@rng(' )
@@ -409,7 +415,9 @@ const funcs = {
 			let num = parseInt(val)
 
 			// Any problems result in the original string being returned untouched.
-			if ( !isNaN(num) ) {
+			if ( isNaN(num) ) {
+				return ins
+			} else {
 				ins = ins.substr( 0,start ) + funcs.getLipsum(num,rnd,cap) + ins.substr( end+1 )
 			}
 
@@ -447,10 +455,15 @@ const funcs = {
 		while ( start !== -1 ) {
 			// Parses the content, expecting a string. 
 			let end = ins.indexOf( ')', start )
+			if ( end === -1 ) {
+				return ins
+			}
 			let list = recipe.variables[ins.substr(start+6,end-start-6)]
 
 			// Any problems result in the original string being returned untouched.
-			if ( list ) {
+			if ( !list ) {
+				return ins
+			} else {
 				entries = list.split(',')
 				ins = ins.substr( 0,start ) + entries[random.get(0,entries.length-1)]+ ins.substr( end+1 )
 			}
