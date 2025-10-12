@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.4",
+	version: "v0.0.5",
 
 	/*
 	* Executes the currently entered recipe.
@@ -136,6 +136,14 @@ const recipe = {
 			spec = { compose: () => { return value.substr(0,closing) } }
 		}
 
+		// Check for patterns
+		if ( tokens[0].startsWith( '%' ) ) {
+			let pattern = recipe.variables[tokens[0].substr(1)]
+			if ( pattern ) {
+				spec = { compose: () => { return recipe.getStringFromPattern( pattern ) } }
+			}
+		}
+
 		// If none of the above worked, create a simple next that returns the original definition string.
 		if ( spec === null ) {
 			return{ next: () => { return defn } }
@@ -247,7 +255,6 @@ const recipe = {
 				}
 				
 				str += chr
-				j += 1
 			}
 		}
 

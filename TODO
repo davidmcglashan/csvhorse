@@ -16,6 +16,8 @@ VERSIONING
 - rng column
 - lorem column
 - date column
+- numbers e.g. count rows but don't start from 1, skip one occasionally, etc.
+- headers - declared in defn - can be blank
 - 'order by' directive
 - comma detection in a single cell's output results in " escaping
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
