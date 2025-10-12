@@ -50,11 +50,12 @@
 				</div>
 				<div class="gripper" id="gripper" onmousedown="ui.dragStart(event);"><span>&vellip;</span></div>
 				<div class="pane" id="output">
-					<strong id="label-output">Output</strong>
+					<strong id="label-output">CSV</strong>
+					<a title="Run the recipe" id="run-button" href="#" onclick="recipe.execute()" class="button">Execute</a>
 					<div class="toolbar hideonwide">
 						<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="#" onclick="ui.wrap('out')" class="button">Wrap</a>
 					</div>
-					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="Transformed text will appear here"></textarea>
+					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="The generated CSV will appear here"></textarea>
 					<div class="scrollpane hidden" id="info"></div>
 					<ul id="log"></ul>
 				</div>

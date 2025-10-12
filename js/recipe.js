@@ -3,36 +3,150 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.2",
+	version: "v0.0.3",
 
 	/*
 	* Executes the currently entered recipe.
 	*/
 	execute: () => {	
-		// Store things in localstorage for future use.
-		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
-		localStorage['csvhorse.variables'] = document.getElementById('vars').value
-
 		// Tidy up the UI.
 		recipe.clearLog()
-
-		// Get the recipe text, split by newlines so we can parse each one in turn. Get the variables too ...
-		let recipeLines = document.getElementById('rec').value.split('\n')
-		let vars = recipe.parseVariables()
+		
+		// Get the variables and the default configuration ...
+		recipe.parseVariables()
+		let config = {
+			rows: 10,
+			columns: {
+				stated: false,
+				count: 5,
+				defns: []
+			},
+			errors: []
+		}
 		let error = null
 
-		for ( let line of recipeLines ) {
+		// Get the recipe text, split by newlines so we can parse each one in turn. 
+		let recipeLines = document.getElementById('rec').value.split('\n')
+		
+		lineLoop: for ( let line of recipeLines ) {
 			// Ignore comments and blank lines
 			if ( line.length === 0 || line.startsWith('//') ) {
 				continue
 			}
+
+			// If the line is a directive then let it update the config
+			let tokens = line.split( ' ' )
+			for ( let key in directives ) {
+				if ( tokens[0] === key ) {
+					directives[key]( tokens, config )
+					continue lineLoop
+				}
+			}
+
+			// Treat this line as a column definition.
+			config.columns.defns.push(line)
+		}
+
+		// Model is a table model for the CSV. We build this before we show it onscreen.
+		let model = {}
+		model.rows = []
+		for ( let r=0; r<config.rows; r+=1 ) {
+			let row = {}
+			model.rows[r] = row
+			row.columns = []
+		}
+
+		// The number of columns shown is the number of definitions received ...
+		let numberOfCols = config.columns.defns.length
+		
+		// ... unless the number of columns was stated in the input.
+		if ( config.columns.stated ) {
+			numberOfCols = config.columns.count
+		}
+
+		// At this point we have the number of rows and columns, and all the definitions so we can start generating content
+		// into the model.
+		for ( let c=0; c<numberOfCols; c+=1 ) {
+			let defn = config.columns.defns[c]
+
+			// Process the definition
+			let spec = recipe.processDefinition( defn )
+
+			// Now use it to generate content for each row!
+			for ( let r=0; r<config.rows; r+=1 ) {
+				let column = {}
+				model.rows[r].columns[c] = column
+				column.content = spec.next()
+			}
+		}
+
+		// Now turn the CSV model into a CSV string
+		let str = ''
+		for ( let r=0; r<model.rows.length; r+=1 ) {
+			let row = model.rows[r]
+
+			for ( let c=0; c<row.columns.length; c+=1 ) {
+				let column = row.columns[c]
+
+				if ( c > 0 ) {
+					str += ','
+				}
+				str += column.content
+			}
+			str += '\n'
 		}
 
 		// Finished looping. Better print the results ...
 		let textarea = document.getElementById('out')
-		textarea.value = ''
+		textarea.value = str
+
+		for ( let error in config.errors ) {
+			recipe.addToLog( config.errors[error] )
+		}
+
 
 		if ( error ) { throw error }
+	},
+
+	/**
+	 * Turns a string definition into a spec which can generate content in the CSV.
+	 */
+	processDefinition: ( defn ) => {
+		let spec = null
+		let tokens = defn.split( ' ' )
+
+		// Check for variables
+		if ( tokens[0].startsWith( '$' ) ) {
+			let value = recipe.variables[tokens[0].substr(1)]
+			if ( value ) {
+				spec = { compose: () => { return value } }
+			}
+		}
+
+		// If none of the above worked, create a simple next that returns the original definition string.
+		if ( spec === null ) {
+			return{ next: () => { return defn } }
+		}
+
+		// The default next() function calls compose(), unless modified by what follows ...
+		spec.next = function() { return this.compose() }
+
+		// Is there an empty keyword?
+		for ( let t=0; t<tokens.length; t+=1 ) {
+			if ( tokens[t] === 'empty' ) {
+				let pctage = parseInt(tokens[t+1])
+				spec.next = function() {
+					if ( random.get( 0, 100 ) < pctage ) {
+						return ''
+					} else {
+						return this.compose()
+					}
+				}
+				break
+			}
+		}
+
+		return spec
 	},
 
 	/**
@@ -50,20 +164,7 @@ const recipe = {
 			}
 		}
 
-		return dict
-	},
-
-	/**
-	 * Checks the ins string for instances of any $variable in vars and swaps in its
-	 * value.
-	 */
-	replaceVariablesInString: ( vars, ins ) => {
-		// Do the variables first since that's straightforward.
-		for ( const [ key, value ] of Object.entries( vars ) ) {
-			ins = ins.replaceAll( '$'+key, value )
-		}
-
-		return ins
+		recipe.variables = dict
 	},
 
 	/**
@@ -89,25 +190,6 @@ const recipe = {
 
 		// Send back the finished string
 		return ins
-	},
-
-	/**
-	 * Generates num words of lower-case Lorem Ipsum text. rnd will shuffle the words. cap will capitalise the first word.
-	 */
-	getLipsum: ( num, rnd, cap ) => {
-		const lipsum = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'.split(' ')
-		let ret = ''
-		for ( let i=0; i<Math.min(35,num); i++ ) {
-			if ( i > 0 ) {
-				ret += ' '
-			}
-			ret += rnd ? lipsum[random.get(0,35)] : lipsum[i]
-		}
-
-		if ( cap ) {
-			ret = ret[0].toUpperCase() + ret.substr( 1 )
-		}
-		return ret
 	},
 
 	/**
@@ -185,6 +267,34 @@ const recipe = {
 	}
 };
 
+const directives = {
+	/**
+	 * Set the number of columns in the output.
+	 */
+	columns: ( tokens, config ) => {
+		let cols = parseInt(tokens[1])
+		if ( isNaN( cols ) ) {
+			config.errors.push( 'Columns requires a number')
+		} else {
+			config.columns.count = cols
+			config.columns.stated = true
+		}
+	},
+
+	/**
+	 * Set the number of rows in the output.
+	 */
+	rows: ( tokens, config ) => {		
+		let rows = parseInt(tokens[1])
+		if ( isNaN( rows ) ) {
+			config.errors.push( 'Rows requires a number')
+		} else {
+			config.rows = rows
+		}
+	},
+
+};
+
 const funcs = {
 	/**
 	 * Generates a random number based on the input of the line: @rng(1,10) => picks a number between 1 and 10
@@ -226,13 +336,32 @@ const funcs = {
 
 			// Any problems result in the original string being returned untouched.
 			if ( !isNaN(num) ) {
-				ins = ins.substr( 0,start ) + recipe.getLipsum(num,rnd,cap) + ins.substr( end+1 )
+				ins = ins.substr( 0,start ) + funcs.getLipsum(num,rnd,cap) + ins.substr( end+1 )
 			}
 
 			start = ins.indexOf( '@lorem(' )
 		}	
 
 		return ins	
+	},
+
+	/**
+	 * Generates num words of lower-case Lorem Ipsum text. rnd will shuffle the words. cap will capitalise the first word.
+	 */
+	getLipsum: ( num, rnd, cap ) => {
+		const lipsum = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'.split(' ')
+		let ret = ''
+		for ( let i=0; i<Math.min(35,num); i++ ) {
+			if ( i > 0 ) {
+				ret += ' '
+			}
+			ret += rnd ? lipsum[random.get(0,35)] : lipsum[i]
+		}
+
+		if ( cap ) {
+			ret = ret[0].toUpperCase() + ret.substr( 1 )
+		}
+		return ret
 	},
 
 	/**

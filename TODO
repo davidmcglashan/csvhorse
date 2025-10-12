@@ -5,13 +5,14 @@ VERSIONING
  - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
+**** Bugs ***********************
+- Wrap states are restored (not on stringhorse either)
+
 **** UI *************************
 - Run button
 - HTML <table> view of the output
 
 **** PROGRAMMING *************************
-- get rid of timers in favour of run button
-- default is a 5 column, 10 row table
 - string column 
   - any string is assumed to be text for the next column
   - any line starting " is treated as a string and not parsed
@@ -19,8 +20,9 @@ VERSIONING
 - rng column
 - lorem column
 - date column
-- get rid of commands.js
-- get rid of help generation
+- 'order by' directive
+- 'blank 50' on a column puts a blank value in 50% of the time
+- seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
 
 **** IDEAS *************************************************************

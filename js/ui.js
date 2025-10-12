@@ -116,21 +116,18 @@ const ui = {
 	 */
 	restoreState: () => {
 		let recipeText = document.getElementById('rec')
-		
+		recipeText.value = localStorage['csvhorse.recipe'] !== undefined ? localStorage['csvhorse.recipe'] : ''
+		recipeText.addEventListener( 'keydown', ui.cmdEnter )
+
 		// 
 		let varsText = document.getElementById('vars')
 		varsText.value = localStorage['csvhorse.variables'] !== undefined ? localStorage['csvhorse.variables'] : ''
+		varsText.addEventListener( 'keydown', ui.cmdEnter )
 
 		// Set the size of the variables panel. 'vars-small' is the default.
 		let size = localStorage['csvhorse.vars-size']
 		if ( size !== undefined ) {
 			document.getElementById( 'variables' ).classList.replace( 'vars-small', size )
-		}
-
-		// Restore the input text and recipe from localStorage.
-		if ( localStorage['csvhorse.recipe'] === undefined ) {
-			recipeText.value = localStorage['csvhorse.recipe'] !== undefined ? localStorage['csvhorse.recipe'] : ''
-			recipe.execute()
 		}
 
 		// Re-establish the left and right for each pane
@@ -162,6 +159,26 @@ const ui = {
 				ui.help()
 			}
 		})
+
+		// Put a listener on the input textareas to store their contents in localstorage on a time-delay.
+		let recipeTimerId = 0;
+		recipeText.addEventListener("keyup", function(event) {
+			clearTimeout(recipeTimerId);
+			recipeTimerId = setTimeout( ui.storage, 750 );
+		});
+		let varsTimerId = 0;
+		varsText.addEventListener("keyup", function(event) {
+			clearTimeout(varsTimerId);
+			varsTimerId = setTimeout( ui.storage, 750 );
+		});
+	},
+
+	/**
+	 * Store textarea inputs in localstorage for future use.
+	 */
+	storage: () => {
+		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
+		localStorage['csvhorse.variables'] = document.getElementById('vars').value
 	},
 
 	/**
@@ -277,6 +294,15 @@ const ui = {
 			elem.style.right = ''
 			localStorage['csvhorse.'+id+'_left'] = elem.style.left
 			localStorage['csvhorse.'+id+'_right'] = elem.style.right
+		}
+	},
+
+	/**
+	 * Listens for Cmd+Enter keypresses and executes the recipe.
+	 */
+	cmdEnter: ( ev ) => {
+		if ( ev.metaKey && ev.keyCode === 13 ) {
+			recipe.execute()
 		}
 	}
 }
