@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.3",
+	version: "v0.0.4",
 
 	/*
 	* Executes the currently entered recipe.
@@ -121,6 +121,19 @@ const recipe = {
 			if ( value ) {
 				spec = { compose: () => { return value } }
 			}
+		}
+
+		// Check for leading "
+		if ( tokens[0].startsWith( '"' ) ) {
+			let value = defn.substr(1)
+			let closing = value.indexOf('"')
+
+			// If the closing quote is at the very end then the definition string is what we'll use
+			if ( closing === -1 || closing === value.length-1 ) {
+				return{ next: () => { return defn } }
+			}
+
+			spec = { compose: () => { return value.substr(0,closing) } }
 		}
 
 		// If none of the above worked, create a simple next that returns the original definition string.

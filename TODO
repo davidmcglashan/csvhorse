@@ -13,15 +13,11 @@ VERSIONING
 - HTML <table> view of the output
 
 **** PROGRAMMING *************************
-- string column 
-  - any string is assumed to be text for the next column
-  - any line starting " is treated as a string and not parsed
-  - any line starting "" is the same but gets speech marks wrapped around it
 - rng column
 - lorem column
 - date column
 - 'order by' directive
-- 'blank 50' on a column puts a blank value in 50% of the time
+- comma detection in a single cell's output results in " escaping
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
 
