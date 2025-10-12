@@ -3,27 +3,18 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.1",
+	version: "v0.0.2",
 
 	/*
 	* Executes the currently entered recipe.
 	*/
 	execute: () => {	
-	},
-	foo: () => {	
-		// Store things in localstorage for future us.
-		localStorage.recipe = document.getElementById('rec').value
-		localStorage.src = document.getElementById('src').value
-		localStorage.variables = document.getElementById('vars').value
-		localStorage.stabs = document.getElementById('checkbox-stab').checked
+		// Store things in localstorage for future use.
+		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
+		localStorage['csvhorse.variables'] = document.getElementById('vars').value
 
-		// Tidy up the UI if wwwify or info was used previously.
-		document.getElementById('info').classList.add('hidden')
-		document.getElementById('out').classList.remove('hidden')
+		// Tidy up the UI.
 		recipe.clearLog()
-
-		// Output starts off as the source text. It is transformed by each command in the recipe.
-		let output = document.getElementById('src').value.split('\n')
 
 		// Get the recipe text, split by newlines so we can parse each one in turn. Get the variables too ...
 		let recipeLines = document.getElementById('rec').value.split('\n')
@@ -35,47 +26,11 @@ const recipe = {
 			if ( line.length === 0 || line.startsWith('//') ) {
 				continue
 			}
-
-			// Split the line at its first space. The first entry is our command, the rest are its parameters.
-			let input = line.split(/ (.*)/)
-			let cmd = command.find( input[0] )
-
-			if ( cmd ) {
-				// Execute the command, storing the new version of the source text in
-				// result, ready for the next command to process it
-				try {
-					let result = cmd.func( output, input, vars );
-
-					// If a command returned NULL then we abort the whole recipe.
-					if ( result === undefined ) {
-						return
-					} else if ( result instanceof String ) {
-						recipe.addToLog( result, input[0] )
-					} else {
-						output = result
-					}
-				} catch ( e ) {
-					recipe.addToLog( 'Something went wrong with this command. Check the console.', input[0] )
-					error = e
-				}
-			} else {
-				recipe.addToLog( 'Unknown command: <strong>' + input[0] + '</strong' )
-			}
 		}
 
 		// Finished looping. Better print the results ...
 		let textarea = document.getElementById('out')
 		textarea.value = ''
-
-		// If we only got a blank string array then don't embellish with line returns
-		if ( output.length === 1 && output[0] === '' ) {
-			return
-		}
-
-		// Otherwise show each line in the result array with a line return
-		for ( let line of output ) {
-			textarea.value = textarea.value + line + '\n'
-		}
 
 		if ( error ) { throw error }
 	},
@@ -93,12 +48,6 @@ const recipe = {
 				let bits = line.split(/=(.*)/)
 				dict[bits[0].trim()] = bits[1].trim()
 			}
-		}
-
-		// Add TAB and space in there too?
-		if ( document.getElementById('checkbox-stab').checked ) {
-			dict['spc'] = ' '
-			dict['tab'] = '\t'
 		}
 
 		return dict

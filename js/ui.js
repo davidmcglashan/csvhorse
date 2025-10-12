@@ -1,22 +1,10 @@
 const ui = {
 	/**
-	 * Copy the output text into the input.
-	 */
-	copyToInput: () => {
-		let tout = document.getElementById('out')
-		let tin = document.getElementById('src')
-		tin.value = tout.value
-		localStorage.src = tout.value
-	},
-
-	/**
 	 * Clears all textareas
 	 */
 	clearAll: () => {
-		document.getElementById('src').value = ''
 		document.getElementById('rec').value = ''
-		localStorage.src = document.getElementById('src').value
-		localStorage.recipe = document.getElementById('rec').value
+		localStorage['csvhorse.recipe'] = ''
 		recipe.execute()
 	},
 
@@ -28,9 +16,9 @@ const ui = {
 		document.getElementById(ta+'-wrap-button').classList.toggle( 'wrap' )
 
 		if ( document.getElementById(ta).classList.contains( 'wrap' ) ) {
-			localStorage['wrap-'+ta] = 'true'
+			localStorage['csvhorse.wrap-'+ta] = 'true'
 		} else {
-			localStorage.removeItem( 'wrap-'+ta )
+			localStorage.removeItem( 'csvhorse.wrap-'+ta )
 		}
 	},
 
@@ -89,127 +77,9 @@ const ui = {
 	},
 
 	/**
-	 * Builds the help page programmatically.
-	 */
-	buildHelp: () => {
-		// Programmatically populate from the JSON file of commands imported elsewhere. Draw it into this <div>
-		let div = document.getElementById('_tray-commands')
-		let ul = document.createElement('ul')
-		div.replaceChildren(ul)
-
-		// First the command list at the top ...
-		for ( let cmd of command.commands ) {
-			let li = document.createElement('li')
-			ul.appendChild( li )
-			let a = document.createElement('a')
-			li.appendChild( a )
-			a['tabIndex'] = '-1'
-			a['title'] = cmd['desc']
-			a['href'] = "#"
-			a.setAttribute( 'onclick', "ui.showHelpCommand('" + cmd['command'] + "');" )
-			a.innerHTML = '<strong>' + cmd['command'].replaceAll('<','&lt;') + '</strong>'
-
-			let short = a.cloneNode(false)
-			short.innerHTML = cmd['short']
-
-			li.insertAdjacentHTML( 'beforeend', '<div class="help-desc">' + short.outerHTML + '</a></div>\n' );
-		}
-
-		// Then each command gets a longer description
-		for ( let cmd of command.commands ) {
-			// first a separator
-			let hr = document.createElement('hr')
-			div.appendChild( hr )
-
-			// Command and parameters
-			let p = document.createElement('p')
-			p.classList.add( 'command' )
-			p['id'] = cmd['command']
-			p.innerHTML = '<strong>' + cmd['command'].replaceAll('<','&lt;') + '</strong>\n'
-			if ( cmd['params'] !== undefined ) {
-				p.insertAdjacentHTML( 'beforeend', ' <span class="params">' + cmd['params'] + '</span>')
-			}
-			div.appendChild( p )
-
-			// Description.
-			p = document.createElement('p')
-			p.innerHTML = cmd['desc']
-			div.appendChild( p )
-			
-			// Example is three panels in a <div>
-			if ( cmd['input'] ) {
-				let example = document.createElement('div')
-				div.appendChild( example )
-				example.classList.add( 'example' )
-
-				for ( id of ['input','recipe','output'] ) {
-					let subdiv = document.createElement('div')
-					example.appendChild( subdiv )
-					subdiv.innerHTML = id + '<pre>' + cmd[id].join('<br>') + '</pre>'
-				}
-
-				let a = document.createElement( 'a' )
-				div.appendChild( a )
-				a['title'] = 'Use example'
-				a['href'] = "#"
-				a.setAttribute( 'onclick', "ui.useExample('" + cmd.command + "');" )
-				a['tabIndex'] = '-1'
-				a.innerHTML = 'Run this example'
-			}
-
-			// Also is an array of related commands.
-			if ( cmd['also'] !== undefined ) {
-				p = document.createElement('p')
-				p.classList.add( 'see-also' )
-				p.innerHTML = 'See also ... '
-				div.appendChild( p )
-
-				let ul = document.createElement('ul')
-				ul.classList.add( 'see-also' )
-				div.appendChild( ul )
-
-				for ( let also of cmd['also'] ) {
-					let linkedCommand = command.find(also)
-					if ( linkedCommand ) {
-						let li = document.createElement( 'li' )
-						ul.appendChild( li )
-
-						let a = document.createElement( 'a' )
-						li.appendChild( a )
-						a['title'] = also
-						a['href'] = "#"
-						a.setAttribute( 'onclick', "ui.showHelpCommand('" + linkedCommand.command + "');" )
-						a['tabIndex'] = '-1'
-						a.innerHTML = also.replaceAll('<','&lt;')
-
-						a = document.createElement( 'a' )
-						li.appendChild( a )
-						a['title'] = also
-						a['href'] = "#"
-						a.setAttribute( 'onclick', "ui.showHelpCommand('" + linkedCommand.command + "');" )
-						a['tabIndex'] = '-1'
-						a.innerHTML = linkedCommand.short
-					} else {
-						ul.insertAdjacentHTML( 'beforeend', '<li>NOT FOUND:' + also + '</li>' )
-					}
-				}			
-			}
-		}
-	},
-
-	/**
-	 * Scrolls the viewport to show the passed in command in the help pane of the slide-in tray.
-	 */
-	showHelpCommand: ( cmd ) => {
-		let elem = document.getElementById(cmd)
-		elem.scrollIntoView({ behavior: "smooth" })
-	},
-
-	/**
 	 * Shows an example based on the page source.
 	 */
 	example: () => {
-		document.getElementById('src').value = 'The quick brown fox jumps over the lazy dog'
 		document.getElementById('rec').value = '// The input pane on the left now shows a simple sentence. This central pane holds the recipe. The commands in here are executed to provide the output.\n' +
 			'\n' +
 			'// <-- Two slashes like this is a comment. Lines beginning with these (like this one) are ignored.\n' +
@@ -223,8 +93,7 @@ const ui = {
 			'// k<n 1 kept the first character in each line: k for keep, < for the beginning, n for number of characters ...\n\n' +
 			'// The end result was an alphabetical list of the initial letters from the input sentence. You can change the recipe to see stringhorse in action. The recipe will run after a short pause and the output will appear in the right hand pane ...\n'
 
-		localStorage.src = document.getElementById('src').value
-		localStorage.recipe = document.getElementById('rec').value
+		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
 		recipe.execute()
 	},
 
@@ -234,10 +103,8 @@ const ui = {
 	useExample: ( name ) => {
 		let cmd = command.find( name )
 
-		document.getElementById('src').value = cmd['input'].join('\n')
 		document.getElementById('rec').value = cmd['recipe'].join('\n').replaceAll('&lt;','<')
-		localStorage.src = document.getElementById('src').value
-		localStorage.recipe = document.getElementById('rec').value
+		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
 
 		// Calling help() closes the tray
 		ui.help()
@@ -252,32 +119,19 @@ const ui = {
 		
 		// 
 		let varsText = document.getElementById('vars')
-		varsText.value = localStorage.variables !== undefined ? localStorage.variables : ''
+		varsText.value = localStorage['csvhorse.variables'] !== undefined ? localStorage['csvhorse.variables'] : ''
 
 		// Set the size of the variables panel. 'vars-small' is the default.
-		let size = localStorage['vars-size']
+		let size = localStorage['csvhorse.vars-size']
 		if ( size !== undefined ) {
 			document.getElementById( 'variables' ).classList.replace( 'vars-small', size )
 		}
 
 		// Restore the input text and recipe from localStorage.
-		if ( localStorage.recipe === undefined ) {
-			recipeText.value = localStorage.recipe !== undefined ? localStorage.recipe : ''
+		if ( localStorage['csvhorse.recipe'] === undefined ) {
+			recipeText.value = localStorage['csvhorse.recipe'] !== undefined ? localStorage['csvhorse.recipe'] : ''
 			recipe.execute()
 		}
-
-		// Put listeners on the original and recipe textareas to do stuff on a time-delayed keypress.
-		let recipeTimerId = 0;
-		recipeText.addEventListener("keyup", function(event) {
-			clearTimeout(recipeTimerId);
-			recipeTimerId = setTimeout( recipe.execute, 750 );
-		});
-
-		let varsTimerId = 0;
-		varsText.addEventListener("keyup", function(event) {
-			clearTimeout(varsTimerId);
-			varsTimerId = setTimeout( recipe.execute, 750 );
-		});
 
 		// Re-establish the left and right for each pane
 		let ids = [ 'input','output','gripper' ]
@@ -294,7 +148,7 @@ const ui = {
 		}
 
 		// Are we doing dark mode?
-		if ( localStorage.hasOwnProperty( 'dark' ) && localStorage['dark'] === 'true' ) {
+		if ( localStorage.hasOwnProperty( 'csvhorse.dark' ) && localStorage['csvhorse.dark'] === 'true' ) {
 			let html = document.getElementById('html')
 			html.classList.add('dark')
 		}
@@ -332,7 +186,7 @@ const ui = {
 		let html = document.getElementById('html')
 		html.classList.toggle('dark')
 
-		localStorage['dark'] = html.classList.contains('dark')
+		localStorage['csvhorse.dark'] = html.classList.contains('dark')
 	},
 
 	/**
@@ -341,14 +195,13 @@ const ui = {
 	vars: ( size ) => {
 		let div = document.getElementById('variables')
 		div.setAttribute('class', size)
-		localStorage['vars-size'] = size
+		localStorage['csvhorse.vars-size'] = size
 	},
 
 	/**
 	 * Initialise the UI. To be called once at point of page load.
 	 */
 	init: () => {
-		ui.buildHelp()
 		ui.restoreState()
 		ui.fixTabIndex()
 

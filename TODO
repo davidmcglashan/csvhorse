@@ -5,11 +5,23 @@ VERSIONING
  - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
-**** FUNCTIONS *********************************************************
-
 **** UI *************************
+- Run button
+- HTML <table> view of the output
 
 **** PROGRAMMING *************************
+- get rid of timers in favour of run button
+- default is a 5 column, 10 row table
+- string column 
+  - any string is assumed to be text for the next column
+  - any line starting " is treated as a string and not parsed
+  - any line starting "" is the same but gets speech marks wrapped around it
+- rng column
+- lorem column
+- date column
+- get rid of commands.js
+- get rid of help generation
+- search for redundant elements and get rid
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
