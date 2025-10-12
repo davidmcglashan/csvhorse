@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.0.5",
+	version: "v0.0.6",
 
 	/*
 	* Executes the currently entered recipe.
@@ -119,7 +119,7 @@ const recipe = {
 		if ( tokens[0].startsWith( '$' ) ) {
 			let value = recipe.variables[tokens[0].substr(1)]
 			if ( value ) {
-				spec = { compose: () => { return value } }
+				spec = { compose: () => { return recipe.replacePatternsInString(value) } }
 			}
 		}
 
@@ -142,6 +142,19 @@ const recipe = {
 			if ( pattern ) {
 				spec = { compose: () => { return recipe.getStringFromPattern( pattern ) } }
 			}
+		}
+
+		// Check for funcs
+		if ( tokens[0].startsWith( '@' ) ) {
+			let func = tokens[0].substr(1)
+			let brace = func.indexOf('(')
+
+			// If there's no brace then there's no function. Use the defn string instead.
+			if ( brace === -1 ) {
+				return{ next: () => { return defn } }
+			}
+
+			spec = { compose: () => { return funcs[func.substr(0,brace)](defn.split(' ')[0]) } }
 		}
 
 		// If none of the above worked, create a simple next that returns the original definition string.
@@ -192,11 +205,11 @@ const recipe = {
 	 * Checks the ins string for instances of any %pattern in vars and swaps in its
 	 * newly-generated value.
 	 */
-	replacePatternsInString: ( vars, ins ) => {
+	replacePatternsInString: ( ins ) => {
 		// Patterns are variables prefixed with %. We want to generate a new result every time
 		// we do a substitution.
 		let index = 0
-		for ( const [ key, value ] of Object.entries( vars ) ) {
+		for ( const [ key, value ] of Object.entries( recipe.variables ) ) {
 			index = ins.indexOf( '%'+key )
 			while ( index !== -1 ) {
 				ins = ins.replace( '%'+key, recipe.getStringFromPattern( value ) )
@@ -207,7 +220,7 @@ const recipe = {
 		// Let the funcs do their func'ing.
 		ins = funcs.rng( ins )
 		ins = funcs.lorem( ins )
-		ins = funcs.list( ins, vars )
+		ins = funcs.list( ins )
 
 		// Send back the finished string
 		return ins
@@ -388,12 +401,12 @@ const funcs = {
 	 * Chooses a random entry from a variable which was defined as a comma-separated list ...
 	 * @list(foo) => A random entry from the list in $foo variable
 	 */
-	list: ( ins, vars ) => {
+	list: ( ins ) => {
 		let start = ins.indexOf( '@list(' )
 		while ( start !== -1 ) {
 			// Parses the content, expecting a string. 
 			let end = ins.indexOf( ')', start )
-			let list = vars[ins.substr(start+6,end-start-6)]
+			let list = recipe.variables[ins.substr(start+6,end-start-6)]
 
 			// Any problems result in the original string being returned untouched.
 			if ( list ) {
