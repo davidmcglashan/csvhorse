@@ -11,9 +11,6 @@ VERSIONING
 **** Features *************************
 - after the | is for ...
   - header ""
-  - always (blank lines)
-
-blank lines & always
 
 - HTML <table> view of the output
 - Nicer run button

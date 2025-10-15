@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.1",
+	version: "v0.1.2",
 
 	/*
 	* Executes the currently entered recipe.
@@ -53,6 +53,9 @@ const recipe = {
 			let row = {}
 			model.rows[r] = row
 			row.columns = []
+
+			// If the row is empty we can sometimes skip doing any string work.
+			row.isEmpty = config.rowsEmptyPercentage && random.get( 0, 100 ) < config.rowsEmptyPercentage
 		}
 
 		// The number of columns shown is the number of definitions received ...
@@ -78,6 +81,7 @@ const recipe = {
 
 				// Start with an empty string we'll concatenate to.
 				column.content = ''
+				column.isAlwaysShown = spec.isAlwaysShown
 
 				// If the spec has an emptyPercentage we can sometimes skip doing any string work.
 				if ( spec.emptyPercentage ) {
@@ -118,7 +122,11 @@ const recipe = {
 				if ( c > 0 ) {
 					str += ','
 				}
-				str += column.content
+
+				// Non-empty rows don't leave empty cells (unless their content is empty)
+				if ( !row.isEmpty || column.isAlwaysShown ) {
+					str += column.content.trim()
+				}
 			}
 			str += '\n'
 		}
@@ -228,6 +236,11 @@ const recipe = {
 				let pctage = parseInt(tokens[t+1])
 				spec.emptyPercentage = pctage
 				break
+			}
+
+			if ( tokens[t] === 'always' ) {
+				spec.isAlwaysShown = true
+				spec.emptyPercentage = 0
 			}
 		}
 	},
@@ -342,14 +355,24 @@ const directives = {
 	 * Set the number of rows in the output.
 	 */
 	rows: ( tokens, config ) => {		
-		let rows = parseInt(tokens[1])
+		// The number of rows is always token 1
+		let rows = parseInt( tokens[1] )
 		if ( isNaN( rows ) ) {
 			config.errors.push( 'Rows requires a number')
 		} else {
 			config.rows = rows
 		}
-	},
 
+		// There can be an empty directive at 2 & 3
+		if ( tokens.length > 3 && tokens[2] === 'empty' ) {
+			let emptyPercentage = parseInt( tokens[3] )
+			if ( isNaN( emptyPercentage ) ) {
+				config.errors.push( 'Rows/empty requires a number')
+			} else {
+				config.rowsEmptyPercentage = emptyPercentage
+			}
+		}
+	},
 };
 
 const funcs = {
