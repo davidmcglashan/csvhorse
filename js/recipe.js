@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.0",
+	version: "v0.1.1",
 
 	/*
 	* Executes the currently entered recipe.
@@ -69,15 +69,26 @@ const recipe = {
 			let defn = config.columns.defns[c]
 
 			// Process the definition to get an array of tokens.
-			let colObj = recipe.getColumnObject( defn )
+			let spec = recipe.getSpecification( defn )
 
 			// Now use it to generate content for each row!
 			for ( let r=0; r<config.rows; r+=1 ) {
 				let column = {}
 				model.rows[r].columns[c] = column
-				
+
+				// Start with an empty string we'll concatenate to.
 				column.content = ''
-				for ( let token of colObj.tokens ) {
+
+				// If the spec has an emptyPercentage we can sometimes skip doing any string work.
+				if ( spec.emptyPercentage ) {
+					if ( random.get( 0, 100 ) < spec.emptyPercentage ) {
+						continue
+					}
+				}
+
+				// Otherwise cell content is achieved by evaluating and concatenating tokens
+				// into the column cell's content.
+				for ( let token of spec.tokens ) {
 					// If the token is a string we can simply concat
 					if ( typeof token === 'string' ) {
 						column.content += token
@@ -120,16 +131,15 @@ const recipe = {
 			recipe.addToLog( config.errors[error] )
 		}
 
-
 		if ( error ) { throw error }
 	},
 
 	/**
-	 * Turns a string definition into an array of tokens which in turn will generate the
+	 * Turns a string definition into a specification which in turn will help generate the
 	 * content of the CSV. Tokens are either strings or objects which contain state that can
 	 * be evaluated into strings.
 	 */
-	getColumnObject: ( defn ) => {
+	getSpecification: ( defn ) => {
 		// A null definition results in a single empty string in the CSV.
 		if ( !defn || defn.length === 0 ) {
 			return {tokens:['']}
@@ -138,8 +148,8 @@ const recipe = {
 		// Definitions can come in two halves separated by a | e.g. "template|config"
 		let arr = defn.split('|')
 		let template = arr[0]
-		let column = {}
-		column.tokens = []
+		let spec = {}
+		spec.tokens = []
 
 		// Replace any known variables in the template.
 		for ( let key in recipe.variables ) {
@@ -156,8 +166,8 @@ const recipe = {
 					// Does it match any of the variables?
 					if ( index === i ) {
 						// Tokenise the search string and the %pattern 
-						column.tokens.push( template.substr(0,index) )
-						column.tokens.push( { pattern:key } )
+						spec.tokens.push( template.substr(0,index) )
+						spec.tokens.push( { pattern:key } )
 						
 						// Chop the tokenised bits from the template and resume the search
 						template = template.substring( index+key.length+1 )
@@ -176,10 +186,10 @@ const recipe = {
 						let end = template.indexOf( ')', index )
 						if ( end !== -1 ) {
 							// Tokenise the search string.
-							column.tokens.push( template.substr(0,index) )
+							spec.tokens.push( template.substr(0,index) )
 
 							let vars = template.substring( index+key.length+2,end)
-							column.tokens.push( { 
+							spec.tokens.push( { 
 								function: key,
 								vars: vars
 							} )
@@ -194,21 +204,19 @@ const recipe = {
 			}
 			i += 1
 		}
-
 		// Include everything that's left in the template (could be everything!)
-		column.tokens.push( template )
+		spec.tokens.push( template )
 
 		// Configs are easy to configure
-		//if ( arr.length === 2 ) {
-		//	recipe.processConfig( arr[1], spec )
-		//}
+		if ( arr.length === 2 ) {
+			recipe.processConfig( arr[1], spec )
+		}
 
-		// Everything failed!
-		return column
+		return spec
 	},
 
 	/**
-	 * Parses the config part of a defn string and configures the spec to act accordingly.
+	 * Parses the config part of a defn string and configures the column spec to act accordingly.
 	 */
 	processConfig: ( config, spec ) => {
 		// Configs are space-separated directives we parse one-by-one
@@ -218,17 +226,10 @@ const recipe = {
 		for ( let t=0; t<tokens.length; t+=1 ) {
 			if ( tokens[t] === 'empty' ) {
 				let pctage = parseInt(tokens[t+1])
-				spec.nextValue = function() {
-					if ( random.get( 0, 100 ) < pctage ) {
-						return ''
-					} else {
-						return this.compose()
-					}
-				}
+				spec.emptyPercentage = pctage
 				break
 			}
 		}
-
 	},
 
 	/**
