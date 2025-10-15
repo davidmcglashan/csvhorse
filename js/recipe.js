@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.3",
+	version: "v0.1.4",
 
 	/*
 	* Executes the currently entered recipe.
@@ -49,6 +49,8 @@ const recipe = {
 		// Model is a table model for the CSV. We build this before we show it onscreen.
 		let model = {}
 		model.rows = []
+		model.header = []
+
 		for ( let r=0; r<config.rows; r+=1 ) {
 			let row = {}
 			model.rows[r] = row
@@ -73,6 +75,12 @@ const recipe = {
 
 			// Process the definition to get an array of tokens.
 			let spec = recipe.getSpecification( defn )
+
+			// Did the spec contain any header information?
+			if ( spec.header ) {
+				model.header[c] = spec.header
+				model.showHeader = true
+			}
 
 			// Now use it to generate content for each row!
 			for ( let r=0; r<config.rows; r+=1 ) {
@@ -113,6 +121,24 @@ const recipe = {
 
 		// Now turn the CSV model into a CSV string
 		let str = ''
+
+		// Show the header if the table specified one
+		if ( model.showHeader ) {
+			for ( let c=0; c<numberOfCols; c+=1 ) {
+				if ( c > 0 ) {
+					str += ','
+				}
+
+				if ( model.header[c] ) {
+					str += model.header[c]
+				} else {
+					str += 'Column '+(c+1)
+				}
+			}
+			str += '\n'
+		}
+
+		// Now the table body
 		for ( let r=0; r<model.rows.length; r+=1 ) {
 			let row = model.rows[r]
 
@@ -229,20 +255,41 @@ const recipe = {
 	processConfig: ( config, spec ) => {
 		// Configs are space-separated directives we parse one-by-one
 		let tokens = config.split(' ')
+		let header = false
 
 		// Is there an empty keyword?
 		for ( let t=0; t<tokens.length; t+=1 ) {
-			if ( tokens[t] === 'empty' && !spec.isAlwaysShown ) {
+			// Empty states a %age that the column can be empty for.
+			if ( !header && tokens[t] === 'empty' && !spec.isAlwaysShown ) {
 				let pctage = parseInt(tokens[t+1])
 				spec.emptyPercentage = pctage
 				continue
 			}
 
-			if ( tokens[t] === 'always' ) {
+			// Always overrides any empty row directive to make the column always show.
+			else if ( !header && tokens[t] === 'always' ) {
 				spec.isAlwaysShown = true
 				spec.emptyPercentage = 0
 				continue
 			}
+
+			// Column headers begin and end with a "
+			else if ( tokens[t].startsWith( '"' ) ) {
+				header = !header
+			} 
+			if ( header ) {
+				if ( !spec.header ) {
+					spec.header = ''
+				}
+				spec.header += ' ' + tokens[t]
+			}
+			if ( header && tokens[t].endsWith( '"' ) ) {
+				header = false
+			}
+		}
+
+		if ( spec.header ) {
+			spec.header = spec.header.replaceAll( '"', '' ).trim()
 		}
 	},
 
