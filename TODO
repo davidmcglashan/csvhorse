@@ -9,10 +9,6 @@ VERSIONING
 - Wrap states are restored (not on stringhorse either)
 
 **** Features *************************
-- after the | is for ...
-  - header ""
-
-- "header off/number/letter force" directive 
 - HTML <table> view of the output
 - Nicer run button
 - Icon

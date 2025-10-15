@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.4",
+	version: "v0.1.5",
 
 	/*
 	* Executes the currently entered recipe.
@@ -122,8 +122,13 @@ const recipe = {
 		// Now turn the CSV model into a CSV string
 		let str = ''
 
-		// Show the header if the table specified one
-		if ( model.showHeader ) {
+		// Show the header if the various configurations specifies one ...
+		//  1. if the model asks for one and the config doesn't disallow it
+		//  2. the config explicitly allows it
+		if ( 
+			(model.showHeader && !config.showHeader)
+			|| (config.showHeader === 'on')
+		) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
 				if ( c > 0 ) {
 					str += ','
@@ -132,7 +137,11 @@ const recipe = {
 				if ( model.header[c] ) {
 					str += model.header[c]
 				} else {
-					str += 'Column '+(c+1)
+					if ( config.headerFormat === 'letters' ) {
+						str += 'Column '+(String.fromCharCode(c+65))
+					} else {
+						str += 'Column '+(c+1)
+					}
 				}
 			}
 			str += '\n'
@@ -418,6 +427,23 @@ const directives = {
 				config.errors.push( 'Rows/empty requires a number')
 			} else {
 				config.rowsEmptyPercentage = emptyPercentage
+			}
+		}
+	},
+
+	/**
+	 * Configure the header: forced off, numbered, lettered, forced on
+	 */
+	header: ( tokens, config ) => {		
+		for ( let token of tokens ) {
+			if ( token === 'off' ) {
+				config.showHeader = 'off'
+			} else if ( token === 'on' ) {
+				config.showHeader = 'on'
+			} else if ( token === 'numbers' ) {
+				config.headerFormat = 'numbers'
+			} else if ( token === 'letters' ) {
+				config.headerFormat = 'letters'
 			}
 		}
 	},
