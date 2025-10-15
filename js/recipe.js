@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.2",
+	version: "v0.1.3",
 
 	/*
 	* Executes the currently entered recipe.
@@ -232,15 +232,16 @@ const recipe = {
 
 		// Is there an empty keyword?
 		for ( let t=0; t<tokens.length; t+=1 ) {
-			if ( tokens[t] === 'empty' ) {
+			if ( tokens[t] === 'empty' && !spec.isAlwaysShown ) {
 				let pctage = parseInt(tokens[t+1])
 				spec.emptyPercentage = pctage
-				break
+				continue
 			}
 
 			if ( tokens[t] === 'always' ) {
 				spec.isAlwaysShown = true
 				spec.emptyPercentage = 0
+				continue
 			}
 		}
 	},
