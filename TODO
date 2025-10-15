@@ -9,14 +9,27 @@ VERSIONING
 - Wrap states are restored (not on stringhorse either)
 
 **** Features *************************
+- after the | is for ...
+  - empty 25
+  - header ""
+  - always (blank lines)
+
+blank lines & always
+
 - HTML <table> view of the output
 - Nicer run button
 - Icon
 - Help tray
 - comma detection in a single cell's output results in " escaping
 1.0
-- headers declared as directive
-- date column
+- date func ... 
+  - @date() puts in todays date
+  - @date(start -10 step 1 skip 50) works like count: 0,0,0 if omitted
+  - param for formats: short,long
+- time func ...
+  - @time() puts in the current time
+  - @time(random) puts in a random time in the day
+  - @time(hms|hm) formats
 - 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
