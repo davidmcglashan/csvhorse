@@ -9,14 +9,15 @@ VERSIONING
 - Wrap states are restored (not on stringhorse either)
 
 **** Features *************************
-- HTML <table> view of the output
 - Nicer run button
 - Better icon
-- Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
 - Help tray
+  - Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
 - comma detection in a single cell's output results in " escaping
 - example and empty state
-1.0
+
+0.5
+
 - date func ... 
   - @date() puts in todays date
   - @date(start -10 step 1 skip 50) works like count: 0,0,0 if omitted
@@ -27,9 +28,12 @@ VERSIONING
   - @time(hms|hm) formats
 - 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
-- search for redundant elements and get rid
+- search for redundant code and get rid of them
 - number of words parameter(s) for @lorem
-- @uuid()
+
+1.0
+
+- HTML <table> view of the output
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage

@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.1.5",
+	version: "v0.2.0",
 
 	/*
 	* Executes the currently entered recipe.
@@ -614,7 +614,14 @@ const funcs = {
 		}
 
 		return func.entries[ random.get( 0, func.entries.length-1 ) ]
-	}
+	},
+
+	/**
+	 * Generates a random UUID for inclusion in the CSV. Takes no parameters, maintains no state!
+	 */
+	uuid: ( func ) => {
+		return self.crypto.randomUUID()
+	},
 };
 
 const random = {
