@@ -11,9 +11,11 @@ VERSIONING
 **** Features *************************
 - HTML <table> view of the output
 - Nicer run button
-- Icon
+- Better icon
+- Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
 - Help tray
 - comma detection in a single cell's output results in " escaping
+- example and empty state
 1.0
 - date func ... 
   - @date() puts in todays date
@@ -27,6 +29,7 @@ VERSIONING
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant elements and get rid
 - number of words parameter(s) for @lorem
+- @uuid()
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
