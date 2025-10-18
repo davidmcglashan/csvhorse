@@ -50,15 +50,40 @@ section#ui {
 		section#ui > div#input > div {
 			flex: 10;
 			position: relative;
-			padding: 1em 0.5em;
+			padding: 1em 0em 0.5em 0.5em;
 		}
 		section#ui > div#input > div#variables textarea {
 			bottom: 0;
 		}
 
+	#recipe,
+	#output {
+		display: flex;
+		justify-content: space-between;
+		align-items: start;
+	}
+		#recipe a#run-button {
+			font-size: 1.5em;
+			border-radius: 10px;
+			z-index: 1;
+			padding: 0.2em 0.75em;
+			background-color: var(--run-bg);
+			border: 1px solid var(--run-border);
+			box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+		}
+		#recipe a#run-button:hover {
+			background-color: var(--run-hover-bg);
+			border: 1px solid var(--run-hover-border);
+			box-shadow: 0px 4px 8px rgba(0,0,0,0.25);
+		}
+		#recipe a#run-button small {
+			font-size:0.65em;
+			opacity: 0.65;
+		}
+
 	/* Make all the toolbar buttons a bit smaller in the UI section to save a bit of space. */
-	section#ui .toolbar .button {
-		font-size: 0.8em;
+	section#ui .button {
+		font-size: 0.9em;
 	}
 
 	/* Prevent the toolbar buttons of the rightmost toolbar from touching the edge of the screen. */

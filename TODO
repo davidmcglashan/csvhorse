@@ -9,13 +9,13 @@ VERSIONING
 - Wrap states are restored (not on stringhorse either)
 
 **** Features *************************
-- Nicer run button
 - Better icon
 - Help tray
   - Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
   - self documenting, a la stringhorse.
 - example and empty state
 - do something with config.errors in everything
+- get rid of href="#"
 
 0.5
 

@@ -34,14 +34,13 @@
 				<div class="pane" id="input">
 					<div id="recipe">
 						<strong id="label-recipe">Recipe</strong>
-						<div class="toolbar hideonwide">
-							<a title="Toggle text wrapping in the Recipe pane" id="rec-wrap-button" href="#" onclick="ui.wrap('rec')" class="button">Wrap</a>
-						</div>
+						<a title="Run the recipe" id="run-button" href="#" onclick="recipe.execute()" class="button">Run <small>(&#8984;+Enter)</small></a>
+						<a title="Toggle text wrapping in the Recipe pane" id="rec-wrap-button" href="#" onclick="ui.wrap('rec')" class="button">Wrap</a>
 						<textarea id="rec" class="mono" aria-labelledby="label-recipe" placeholder="Type the recipe here using one directive on each line"></textarea>
 					</div>
 					<div id="variables" class="vars-small">
 						<strong id="label-variables">Variables</strong>
-						<div class="toolbar hideonwide">
+						<div class="toolbar">
 							<a id="vars-large-button" title="Make the variables panel large" class="button invert" href="#" onclick="ui.vars('vars-large')">Large</a>
 							<a id="vars-small-button" title="Make the variables small" class="button invert" href="#" onclick="ui.vars('vars-small')">Small</a>
 						</div>
@@ -50,11 +49,8 @@
 				</div>
 				<div class="gripper" id="gripper" onmousedown="ui.dragStart(event);"><span>&vellip;</span></div>
 				<div class="pane" id="output">
-					<strong id="label-output">CSV</strong>
-					<a title="Run the recipe" id="run-button" href="#" onclick="recipe.execute()" class="button">Execute</a>
-					<div class="toolbar hideonwide">
-						<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="#" onclick="ui.wrap('out')" class="button">Wrap</a>
-					</div>
+					<strong id="label-output">Output CSV</strong>
+					<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="#" onclick="ui.wrap('out')" class="button">Wrap</a>
 					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="The generated CSV will appear here"></textarea>
 					<div class="scrollpane hidden" id="info"></div>
 					<ul id="log"></ul>

@@ -18,6 +18,10 @@
 	--tab-hover-fg: #25a;
 	--example-bg: #f0f0f0;
 	--example-border: #e0e0e0;
+	--run-bg: #080;
+	--run-border: #070;
+	--run-hover-bg: #060;
+	--run-hover-border: #050;
 	--log-fg: #f00;
 	color-scheme: light;
 }
@@ -161,9 +165,9 @@ a {
 		}
 		/* Affordance effects for buttons: dark background, white foreground. */
 		a.button:hover {
-			border: 1px solid var(--button-hover-bg) !important;
-			background-color: var(--button-hover-bg) !important;
-			color: var(--button-hover-fg) !important;
+			border: 1px solid var(--button-hover-bg);
+			background-color: var(--button-hover-bg);
+			color: var(--button-hover-fg);
 		}
 
 /* Pre tags get grey colouring and nice spacing. */

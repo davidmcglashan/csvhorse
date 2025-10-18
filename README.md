@@ -8,6 +8,10 @@ TK
 
 ## Changelog
 
+### version 0.2.4
+* Tidied up some redundant code carried over from stringhorse.
+* The Run button really belongs to the recipe pane since you're running the recipe ... :|
+
 ### version 0.2.3
 * New separator directive can override the ',' separator between columns to make e.g. semi-colon separated value files (SCSV?)
 * Any separators detected in strings result in "wrapping" and "-escaping of the string.
