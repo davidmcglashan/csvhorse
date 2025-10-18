@@ -8,6 +8,9 @@ TK
 
 ## Changelog
 
+### version 0.2.2
+* Leading zeroes are inserted on date numerals if month names aren't being used.
+
 ### version 0.2.1
 * date() function added with formatting and arithmetic options similar to count().
 
