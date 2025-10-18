@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.2.1",
+	version: "v0.2.2",
 
 	/*
 	* Executes the currently entered recipe.
@@ -601,19 +601,26 @@ const funcs = {
 
 		// Format the date based on the ourput parameters
 		const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+		let d = func.current.getDate()
+		let dd = d < 10 ? '0' + d : d
+		let m = func.current.getMonth()
+		let mm = m < 9 ? '0' + (m+1) : (m+1)
+		let y = func.current.getFullYear()
+		let sep = func.separator
+
 		switch ( func.format ) {
 			case 'dmy':
-				return `${func.current.getDate()}${func.separator}${func.current.getMonth()+1}${func.separator}${func.current.getFullYear()}`
+				return `${dd}${sep}${mm}${sep}${y}`
 			case 'dMy':
-				return `${func.current.getDate()}${func.separator}${months[func.current.getMonth()]}${func.separator}${func.current.getFullYear()}`
+				return `${d}${sep}${months[m]}${sep}${y}`
 			case 'mdy':
-				return `${func.current.getMonth()+1}${func.separator}${func.current.getDate()}${func.separator}${func.current.getFullYear()}`
+				return `${mm}${sep}${dd}${sep}${y}`
 			case 'Mdy':
-				return `${months[func.current.getMonth()]}${func.separator}${func.current.getDate()}${func.separator}${func.current.getFullYear()}`
+				return `${months[m]}${sep}${d}${sep}${y}`
 			case 'ymd':
-				return `${func.current.getFullYear()}${func.separator}${func.current.getMonth()+1}${func.separator}${func.current.getDate()}`
+				return `${y}${sep}${mm}${sep}${dd}`
 			case 'yMd':
-				return `${func.current.getFullYear()}${func.separator}${months[func.current.getMonth()]}${func.separator}${func.current.getDate()}`
+				return `${y}${sep}${months[m]}${sep}${d}`
 		}
 
 		return func.current.toDateString()
