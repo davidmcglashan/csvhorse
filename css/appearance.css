@@ -184,11 +184,6 @@ pre {
 	font-size: 90%;
 }
 
-/* Convenience class for spacing elements a little. */
-.gapAfter {
-	margin-right: 1em;
-}
-
 /* This class can be used on all monospaced elements e.g. textboxes. */
 .mono {
 	font-size: inherit;
@@ -196,13 +191,6 @@ pre {
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
-}
-
-/* Removes the bullets from the <ul> when the wwwify command is used to render hyperlinks. */
-.webify ul {
-	list-style-type: none;
-	padding-inline-start: inherit;
-	line-height: 1.3em
 }
 
 /* Used only by the info command. */

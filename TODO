@@ -13,13 +13,13 @@ VERSIONING
 - Better icon
 - Help tray
   - Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
+  - self documenting, a la stringhorse.
 - example and empty state
-- do something with config.errors
+- do something with config.errors in everything
 
 0.5
 
 - 'order by' directive
-- search for redundant code and get rid of them
 - number of words parameter(s) for @lorem
 - play with window resizing and scrollpane %ages
 

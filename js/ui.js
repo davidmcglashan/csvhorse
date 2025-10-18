@@ -98,20 +98,6 @@ const ui = {
 	},
 
 	/**
-	 * Resets the stringhorse UI with the passed in example from the help.
-	 */
-	useExample: ( name ) => {
-		let cmd = command.find( name )
-
-		document.getElementById('rec').value = cmd['recipe'].join('\n').replaceAll('&lt;','<')
-		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
-
-		// Calling help() closes the tray
-		ui.help()
-		recipe.execute()
-	},
-
-	/**
 	 * Restores the UI to its previous state invoking localstorage. Called once on page load.
 	 */
 	restoreState: () => {
