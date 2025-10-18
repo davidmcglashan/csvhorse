@@ -18,18 +18,16 @@ VERSIONING
 
 0.5
 
-- date func ... 
-  - @date() puts in todays date
-  - @date(start -10 step 1 skip 50) works like count: 0,0,0 if omitted
-  - param for formats: short,long
 - time func ...
   - @time() puts in the current time
-  - @time(random) puts in a random time in the day
+  - @time(random/day/night/am/pm/hour) puts in a random time in the day - hour adds 1 hour to previou
   - @time(hms|hm) formats
 - 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant code and get rid of them
 - number of words parameter(s) for @lorem
+- play with window resizing and scrollpane %ages
+- separator ,;:. instead of ,
 
 1.0
 

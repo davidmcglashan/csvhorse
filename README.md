@@ -8,6 +8,9 @@ TK
 
 ## Changelog
 
+### version 0.2.1
+* date() function added with formatting and arithmetic options similar to count().
+
 ### version 0.2
 * Pre-alpha status
 * Row and column directives

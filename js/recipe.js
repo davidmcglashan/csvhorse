@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.2.0",
+	version: "v0.2.1",
 
 	/*
 	* Executes the currently entered recipe.
@@ -515,6 +515,108 @@ const funcs = {
 		// Increment the counter and return the new value.
 		func.current += func.step
 		return func.current
+	},
+
+	/**
+	 * Implements a date using the function's saved state to increment. The next value of the
+	 * function is returned for inclusion in the CSV.
+	 * @date() inserts the current date
+	 * @date(23) starts from 23 days time
+	 * @date(-1) starts from yesterday
+	 * @date(step 1) starts from today and increments by 1 day with each call
+	 * @date(step 1 skip 50) starts from today and increments by 1 with a 50% probability of a value being skipped.
+	 */
+	date: ( func ) => {
+		// Set up the function first.
+		if ( !func.current ) {
+			// These are the default values. We'll use these if something goes wrong.
+			func.current = new Date()
+			func.step = 0
+			func.skip = 0
+			func.format = 'dMy'
+			func.separator = ' '
+
+			if ( func.vars ) {
+				let vars = func.vars.split( ' ' )
+				let i = 0
+
+				// The first parameter being a number can only be a starting index.
+				let start = parseInt( vars[i] )
+				if ( !isNaN( start ) ) {
+					func.current = new Date( new Date().setDate( new Date().getDate() + start ) )
+					i += 1
+				}
+
+				while ( i < vars.length ) {
+					// Next parameter must be a recognised word.
+					if ( vars[i] === 'step' ) {
+						if ( vars[i+1] ) {
+							let step = parseInt( vars[i+1] )
+							if ( !isNaN( step ) ) {
+								func.step = step
+							}	
+						}
+					}
+
+					// Next parameter must be a recognised word.
+					else if ( vars[i] === 'skip' ) {
+						if ( vars[i+1] ) {
+							let skip = parseInt( vars[i+1] )
+							if ( !isNaN( skip ) ) {
+								func.skip = skip
+							}	
+						}
+					}
+
+					// Next parameter will take some working out
+					else if ( vars[i] === '/' ) {
+						func.separator = '/'
+					} else if ( vars[i] === '-' ) {
+						func.separator = '-'
+					} else if ( vars[i] === '.' ) {
+						func.separator = '.'
+					} else if ( vars[i] === '!' ) {
+						func.separator = ''
+					} else if ( vars[i].indexOf( 'y' ) !== -1 ) {
+						func.format = vars[i]
+					}
+
+					i += 1
+				}
+			}
+		} 
+		
+		// We're already set up so do the increment and skip if appropriate ...
+		else {
+			// Non-zero skips mean that sometimes we skip a value when counting.
+			if ( func.skip > 0 ) {
+				while ( random.get(0,100) < func.skip ) {
+					func.current = new Date( func.current.setDate( func.current.getDate() + func.step ) )
+				}
+			}
+
+			// Increment the counter and return the new value.
+			func.current = new Date( func.current.setDate( func.current.getDate() + func.step ) )
+		}
+
+		// Format the date based on the ourput parameters
+		const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+		switch ( func.format ) {
+			case 'dmy':
+				return `${func.current.getDate()}${func.separator}${func.current.getMonth()+1}${func.separator}${func.current.getFullYear()}`
+			case 'dMy':
+				return `${func.current.getDate()}${func.separator}${months[func.current.getMonth()]}${func.separator}${func.current.getFullYear()}`
+			case 'mdy':
+				return `${func.current.getMonth()+1}${func.separator}${func.current.getDate()}${func.separator}${func.current.getFullYear()}`
+			case 'Mdy':
+				return `${months[func.current.getMonth()]}${func.separator}${func.current.getDate()}${func.separator}${func.current.getFullYear()}`
+			case 'ymd':
+				return `${func.current.getFullYear()}${func.separator}${func.current.getMonth()+1}${func.separator}${func.current.getDate()}`
+			case 'yMd':
+				return `${func.current.getFullYear()}${func.separator}${months[func.current.getMonth()]}${func.separator}${func.current.getDate()}`
+		}
+
+		return func.current.toDateString()
 	},
 	
 	/**
