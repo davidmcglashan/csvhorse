@@ -13,7 +13,6 @@ VERSIONING
 - Better icon
 - Help tray
   - Icon attribution: <a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
-- comma detection in a single cell's output results in " escaping
 - example and empty state
 - do something with config.errors
 
@@ -23,7 +22,6 @@ VERSIONING
 - search for redundant code and get rid of them
 - number of words parameter(s) for @lorem
 - play with window resizing and scrollpane %ages
-- separator ,;:. instead of ,
 
 1.0
 

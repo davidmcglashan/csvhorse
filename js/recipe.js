@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v0.2.2",
+	version: "v0.2.3",
 
 	/*
 	* Executes the currently entered recipe.
@@ -21,6 +21,7 @@ const recipe = {
 				count: 5,
 				defns: []
 			},
+			separator: ',',
 			errors: []
 		}
 		let error = null
@@ -131,16 +132,16 @@ const recipe = {
 		) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
 				if ( c > 0 ) {
-					str += ','
+					str += config.separator
 				}
 
 				if ( model.header[c] ) {
-					str += model.header[c]
+					str += recipe.makeSafe( model.header[c], config )
 				} else {
 					if ( config.headerFormat === 'letters' ) {
-						str += 'Column '+(String.fromCharCode(c+65))
+						str += recipe.makeSafe( 'Column '+(String.fromCharCode(c+65)), config )
 					} else {
-						str += 'Column '+(c+1)
+						str += recipe.makeSafe( 'Column '+(c+1), config )
 					}
 				}
 			}
@@ -155,12 +156,12 @@ const recipe = {
 				let column = row.columns[c]
 
 				if ( c > 0 ) {
-					str += ','
+					str += config.separator
 				}
 
 				// Non-empty rows don't leave empty cells (unless their content is empty)
 				if ( !row.isEmpty || column.isAlwaysShown ) {
-					str += column.content.trim()
+					str += recipe.makeSafe( column.content.trim(), config )
 				}
 			}
 			str += '\n'
@@ -366,6 +367,17 @@ const recipe = {
 		}
 
 
+		return str
+	},
+
+	/**
+	 * Make a string 'safe' for use in a CSV file.
+	 * If the separator is detected then the string is encased in quotes. If quotes were present then they become double-quotes.
+	 */
+	makeSafe: ( str, config ) => {
+		if ( str.indexOf( config.separator ) !== -1 ) {
+			return '"' + str.replaceAll( '"', '""' ) + '"'
+		}
 		return str
 	},
 

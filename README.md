@@ -8,6 +8,10 @@ TK
 
 ## Changelog
 
+### version 0.2.3
+* New separator directive can override the ',' separator between columns to make e.g. semi-colon separated value files (SCSV?)
+* Any separators detected in strings result in "wrapping" and "-escaping of the string.
+
 ### version 0.2.2
 * time() function added with various randomisations and a sequence option.
 * Leading zeroes are inserted on date numerals if month names aren't being used.

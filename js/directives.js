@@ -63,7 +63,20 @@ const directives = {
 		} else {
 			random.SEED = val
 		}
+	},
 
+	/**
+	 * Sets a separator to replace the default of ,
+	 */
+	separator: ( tokens, config ) => {
+		if ( tokens[1] && tokens[1].length > 0 ) {
+			const supported = ',.;:/|'
+			if ( supported.indexOf( tokens[1][0] ) !== -1 ) {
+				config.separator = tokens[1][0]
+				return
+			}
+		}
+		config.errors.push( 'Separator must be one of: , . ; : / |')
 	}
 };
 
