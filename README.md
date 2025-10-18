@@ -11,6 +11,7 @@ TK
 ### version 0.2.2
 * time() function added with various randomisations and a sequence option.
 * Leading zeroes are inserted on date numerals if month names aren't being used.
+* Split recipe.js into smaller JS files
 
 ### version 0.2.1
 * date() function added with formatting and arithmetic options similar to count().
