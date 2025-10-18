@@ -6,8 +6,9 @@ const random = {
 	 * https://stackoverflow.com/a/65793426
 	 */ 
 	get: ( min,max ) => {
+		// If the seed got reset to zero we can liven it up with the current time.
 		if ( random.SEED === 0 ) {
-			random.SEED = parseInt( random.getSeed() ) || 1
+			random.SEED = new Date().getMilliseconds() || 1
 		}
 
 		// Robert Jenkins’ 32 bit integer hash function ...
@@ -20,21 +21,5 @@ const random = {
 		let rnd = (random.SEED & 0xFFFFFFF) / 0x10000000
 
 		return min + Math.floor( rnd*(max-min+1) )
-	},
-
-	/**
-	 * Gets or derives the seed.
-	 */
-	getSeed: () => {		
-		const urlParams = new URLSearchParams( window.location.search );
-		const seed = urlParams.get( 'seed' );
-
-		// Did we get one?
-		if ( seed !== null ) {
-			return seed
-		}
-
-		// Never mind. Fashion one out of today's date.
-		return '' + new Date().getMilliseconds()
 	},
 }

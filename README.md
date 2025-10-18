@@ -12,6 +12,7 @@ TK
 * time() function added with various randomisations and a sequence option.
 * Leading zeroes are inserted on date numerals if month names aren't being used.
 * Split recipe.js into smaller JS files
+* seed directive can be used to seed the random number generator, giving you the same output each time.
 
 ### version 0.2.1
 * date() function added with formatting and arithmetic options similar to count().

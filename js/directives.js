@@ -51,5 +51,19 @@ const directives = {
 			}
 		}
 	},
+
+	/**
+	 * Sets a seed for random{} to use. This works best when it's the first line of a
+	 * recipe since some funcs and directives will call random during their set up.
+	 */
+	seed: ( tokens, config ) => {
+		let val = parseInt(tokens[1])
+		if ( isNaN( val ) ) {
+			config.errors.push( 'Seed requires a number')
+		} else {
+			random.SEED = val
+		}
+
+	}
 };
 
