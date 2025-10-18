@@ -625,6 +625,84 @@ const funcs = {
 
 		return func.current.toDateString()
 	},
+
+	/**
+	 * Writes the time using the function's saved state to increment. The next value of the
+	 * function is returned for inclusion in the CSV.
+	 * @time() inserts the current time
+	 */
+	time: ( func ) => {
+		// Set up the function first.
+		if ( !func.setup ) {
+			func.setup = true
+
+			// Set up to use the current time. This may be overriden later on.
+			let time = new Date()
+			func.hour = time.getHours()
+			func.minute = time.getMinutes()
+			func.second = time.getSeconds()
+
+			// Parse the parameters if there are any ...
+			if ( func.vars ) {
+				let vars = func.vars.split( ' ' )
+
+				for ( let i=0; i < vars.length; i+= 1 ) {
+					if ( vars[i] === 'random' ) {
+						func.randomise = true
+						func.min = 0
+						func.max = 23
+					} else if ( vars[i] === 'am' ) {
+						func.randomise = true
+						func.min = 0
+						func.max = 11
+					} else if ( vars[i] === 'pm' ) {
+						func.randomise = true
+						func.min = 12
+						func.max = 23
+					} else if ( vars[i] === 'day' ) {
+						func.randomise = true
+						func.min = 6
+						func.max = 18
+					} else if ( vars[i] === 'step' ) {
+						func.step = true
+					} else if ( vars[i].length > 0 ) {
+						func.format = vars[i]
+					}
+				}
+	
+				if ( func.step && func.randomise ) {
+					func.hour = random.get(func.min,func.max)
+				}
+			}
+		}
+		
+		// Are we set to randomise the minutes and seconds with every iteration?
+		if ( func.randomise )  {
+			if ( func.step ) {
+				func.minute += random.get(2,20)
+				if ( func.minute > 59 ) {
+					func.hour += 1
+					func.minute -= 60
+				}
+			} else {
+				func.hour = random.get(func.min,func.max)
+				func.minute = random.get(0,59)
+			}
+			
+			func.second = random.get(0,59)
+		}
+
+		// Display the current value based on formatting rules.
+		let hh = (func.hour < 10 ? '0' : '' ) + func.hour
+		let mm = (func.minute < 10 ? '0' : '' ) + func.minute
+		let ss = (func.second < 10 ? '0' : '' ) + func.second
+
+		if ( func.format === 'hm' ) {
+			return `${hh}:${mm}`
+		} else {
+			return `${hh}:${mm}.${ss}`
+		}
+	},
 	
 	/**
 	 * Implements a random number generator. The genreated value is returned for inclusion in the CSV.

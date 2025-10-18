@@ -9,6 +9,7 @@ TK
 ## Changelog
 
 ### version 0.2.2
+* time() function added with various randomisations and a sequence option.
 * Leading zeroes are inserted on date numerals if month names aren't being used.
 
 ### version 0.2.1

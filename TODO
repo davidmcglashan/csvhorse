@@ -18,10 +18,6 @@ VERSIONING
 
 0.5
 
-- time func ...
-  - @time() puts in the current time
-  - @time(random/day/night/am/pm/hour) puts in a random time in the day - hour adds 1 hour to previou
-  - @time(hms|hm) formats
 - 'order by' directive
 - seed 0 as a directive to set a seed so that CSVs are random/deterministic
 - search for redundant code and get rid of them
