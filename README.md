@@ -8,6 +8,9 @@ TK
 
 ## Changelog
 
+### version 0.2.5
+* Finally, a good icon!
+
 ### version 0.2.4
 * Tidied up some redundant code carried over from stringhorse.
 * The Run button really belongs to the recipe pane since you're running the recipe ... :|
