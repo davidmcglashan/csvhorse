@@ -23,10 +23,10 @@
 			<img src="csvhorse.png" alt="csvhorse logo">
 			<h1>csvhorse</h1>
 			<div class="toolbar">
-				<a title="Reset csvhorse" href="#" onclick="ui.clearAll()">Reset</a>
-				<a title="See an example" href="#" onclick="ui.example()">Example</a>
-				<a title="Toggle dark mode" class="button invert" href="#" onclick="ui.dark()"><span class="dark">Dark</span><span class="light">Light</span> Mode</a>
-				<a title="Open the help" href="#" onclick="ui.help()" class="button">Help</a>
+				<a title="Reset csvhorse" href="javascript:" onclick="ui.clearAll()">Reset</a>
+				<a title="See an example" href="javascript:" onclick="ui.example()">Example</a>
+				<a title="Toggle dark mode" class="button invert" href="javascript:" onclick="ui.dark()"><span class="dark">Dark</span><span class="light">Light</span> Mode</a>
+				<a title="Open the help" href="javascript:" onclick="ui.help()" class="button">Help</a>
 			</div>
 		</header>
 		<main>
@@ -34,15 +34,15 @@
 				<div class="pane" id="input">
 					<div id="recipe">
 						<strong id="label-recipe">Recipe</strong>
-						<a title="Run the recipe" id="run-button" href="#" onclick="recipe.execute()" class="button">Run <small>(&#8984;+Enter)</small></a>
-						<a title="Toggle text wrapping in the Recipe pane" id="rec-wrap-button" href="#" onclick="ui.wrap('rec')" class="button">Wrap</a>
+						<a title="Run the recipe" id="run-button" href="javascript:" onclick="recipe.execute()" class="button">Run <small>(&#8984;+Enter)</small></a>
+						<a title="Toggle text wrapping in the Recipe pane" id="rec-wrap-button" href="javascript:" onclick="ui.wrap('rec')" class="button">Wrap</a>
 						<textarea id="rec" class="mono" aria-labelledby="label-recipe" placeholder="Type the recipe here using one directive on each line"></textarea>
 					</div>
 					<div id="variables" class="vars-small">
 						<strong id="label-variables">Variables</strong>
 						<div class="toolbar">
-							<a id="vars-large-button" title="Make the variables panel large" class="button invert" href="#" onclick="ui.vars('vars-large')">Large</a>
-							<a id="vars-small-button" title="Make the variables small" class="button invert" href="#" onclick="ui.vars('vars-small')">Small</a>
+							<a id="vars-large-button" title="Make the variables panel large" class="button invert" href="javascript:" onclick="ui.vars('vars-large')">Large</a>
+							<a id="vars-small-button" title="Make the variables small" class="button invert" href="javascript:" onclick="ui.vars('vars-small')">Small</a>
 						</div>
 						<textarea id="vars" class="mono" aria-labelledby="label-variables" placeholder="Variables in the form 'key=value'"></textarea>
 					</div>
@@ -50,7 +50,7 @@
 				<div class="gripper" id="gripper" onmousedown="ui.dragStart(event);"><span>&vellip;</span></div>
 				<div class="pane" id="output">
 					<strong id="label-output">Output CSV</strong>
-					<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="#" onclick="ui.wrap('out')" class="button">Wrap</a>
+					<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="javascript:" onclick="ui.wrap('out')" class="button">Wrap</a>
 					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="The generated CSV will appear here"></textarea>
 					<div class="scrollpane hidden" id="info"></div>
 					<ul id="log"></ul>
@@ -61,11 +61,11 @@
 			<section id="tray">
 				<div class="tabs">
 					<ul id="_tray-ul">
-						<li id="tab-commands" class="selected"><a href="#" onclick="ui.tab('_tray','commands')">Recipes</a></li>
-						<li id="tab-about"><a href="#" onclick="ui.tab('_tray','about')">About</a></li>
+						<li id="tab-commands" class="selected"><a href="javascript:" onclick="ui.tab('_tray','commands')">Recipes</a></li>
+						<li id="tab-about"><a href="javascript:" onclick="ui.tab('_tray','about')">About</a></li>
 					</ul>
 					<div class="toolbar">
-						<a title="Close this tray" href="#" onclick="ui.help()">&times; Close</a>
+						<a title="Close this tray" href="javascript:" onclick="ui.help()">&times; Close</a>
 					</div>
 				</div>
 					<div id="_tray"><div id="_tray-commands"></div>
@@ -74,10 +74,10 @@
 							<h1>csvhorse</h1>
 							<span class="version"></span><br>
 							<p>
-								<strong>csvhorse</strong> generates CSV files from simple recipes.
+								<strong>csvhorse</strong> generates CSV files from simple recipes typed in the left-hand pane. CSV output appears on the right when the recie is run. There is support for variables and functions for counting, random numbers, Lorem Ipsum, dates, and more &hellip;
 							</p>							
 							<p>
-								<a title="See an example" href="#" onclick="ui.help();ui.example()">See an example</a>
+								<a title="See an example" href="javascript:" onclick="ui.help();ui.example()">See an example</a>
 							</p>
 							<hr>
 							<p>
@@ -85,7 +85,10 @@
 							</p>
 							<p>
 								All the source code on github at 
-								<a title="Source code on github.com" href="https://github.com/davidmcglashan/csvhorse">github.com/davidmcglashan/stringhorse</a> (<a title="Creative Commons license details" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal</a>)
+								<a title="Source code on github.com" href="https://github.com/davidmcglashan/csvhorse">github.com/davidmcglashan/csvhorse</a> (<a title="Creative Commons license details" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal</a>)
+							</p>
+							<p>
+								<a href="https://www.flaticon.com/free-icons/horse" title="horse icons">Horse icons created by Freepik - Flaticon</a>
 							</p>
 						</div>
 					</div>

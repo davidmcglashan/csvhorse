@@ -1,12 +1,15 @@
 # csvhorse
 
+csvhorse generates CSV files from simple recipes typed in the left-hand pane. CSV output appears on the right when the recie is run. There is support for variables and functions for counting, random numbers, Lorem Ipsum, dates, and more ...
+
 Try CSVhorse online at https://csvhorse.mcglashan.net/
 
-## Philosophy
-
-TK
-
 ## Changelog
+
+### version 0.2.6
+* Appearance tweak for the run button.
+* Example is no longer a stringhorse example.
+* Removed all the href="#" for something better.
 
 ### version 0.2.5
 * Finally, a good icon!

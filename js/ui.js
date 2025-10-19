@@ -80,18 +80,28 @@ const ui = {
 	 * Shows an example based on the page source.
 	 */
 	example: () => {
-		document.getElementById('rec').value = '// The input pane on the left now shows a simple sentence. This central pane holds the recipe. The commands in here are executed to provide the output.\n' +
-			'\n' +
-			'// <-- Two slashes like this is a comment. Lines beginning with these (like this one) are ignored.\n' +
-			'\n' +
-			'|\nsort\ncap\nk<n 1\n' +
-			'\n' +
-			'// Above are the commands that make up the recipe. What does each command do ... ?\n' +
-			'// | broke the text into words and put each word on a new line ...\n' +
-			'// sort put the lines in alphabetical order ...\n' +
-			'// cap capitalised the first letter of each line ...\n' +
-			'// k<n 1 kept the first character in each line: k for keep, < for the beginning, n for number of characters ...\n\n' +
-			'// The end result was an alphabetical list of the initial letters from the input sentence. You can change the recipe to see stringhorse in action. The recipe will run after a short pause and the output will appear in the right hand pane ...\n'
+		document.getElementById('rec').value = '// How big is the output?\n' +
+		'rows 25\n' +
+		'columns 6\n' +
+		'\n' +
+		'// Strings are included as is\n' +
+		'hello world\n' +
+		'\n' +
+		'// Count in ones or twos\n' +
+		'@count()\n' +
+		'@count(step 2)\n' +
+		'\n' +
+		'// 5 random words of lorem ipsum\n' +
+		'@lorem(5 random)\n' +
+		'\n' +
+		'// Date and time\n' +
+		'@date()\n' +
+		'@time()\n' +
+		'\n' +
+		'// This seventh column doesn\'t show because only six columns were requested at the top.\n' +
+		'HIDDEN\n' +
+		'\n' +
+		'// Comments and blank lines are ignored. Try changing the recipe ... !\n'
 
 		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
 		recipe.execute()
