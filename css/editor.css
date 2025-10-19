@@ -70,6 +70,7 @@ section#ui {
 			background-color: var(--run-bg);
 			border: 1px solid var(--run-border);
 			box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+			margin-top: -0.35em;
 		}
 		#recipe a#run-button:hover {
 			background-color: var(--run-hover-bg);
