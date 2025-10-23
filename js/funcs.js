@@ -312,6 +312,9 @@ const funcs = {
 				func.random = func.vars.indexOf( 'random' ) != -1
 				//func.capitalise = func.vars.indexOf( 'c' ) != -1
 				func.numberOfWords = Math.min( 35, parseInt(func.vars) )
+				if ( func.numberOfWords === 0 || isNaN(func.numberOfWords)) {
+					func.numberOfWords = 5
+				}
 			}
 		}
 
@@ -325,7 +328,7 @@ const funcs = {
 			ret += func.random ? lipsum[random.get(0,35)] : lipsum[i]
 		}
 	
-		if ( func.capitalise ) {
+		if ( func.capitalise && ret.length > 0 ) {
 			ret = ret[0].toUpperCase() + ret.substring( 1 )
 		}
 		return ret
