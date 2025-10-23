@@ -39,7 +39,7 @@ const recipe = {
 			let tokens = line.split( ' ' )
 			let directive = directives[tokens[0]]
 			if ( directive ) {
-				directive( tokens, config )
+				directive.func( tokens, config )
 				continue
 			}
 
@@ -164,7 +164,9 @@ const recipe = {
 					str += recipe.makeSafe( column.content.trim(), config )
 				}
 			}
-			str += '\n'
+			if ( numberOfCols > 0 ) {
+				str += '\n'
+			}
 		}
 
 		// Finished looping. Better print the results ...

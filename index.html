@@ -61,20 +61,46 @@
 			<section id="tray">
 				<div class="tabs">
 					<ul id="_tray-ul">
-						<li id="tab-commands" class="selected"><a href="javascript:" onclick="ui.tab('_tray','commands')">Recipes</a></li>
-						<li id="tab-about"><a href="javascript:" onclick="ui.tab('_tray','about')">About</a></li>
+						<li id="tab-about" class="selected"><a href="javascript:" onclick="ui.tab('_tray','about')">About</a></li>
+						<li id="tab-directives"><a href="javascript:" onclick="ui.tab('_tray','directives')">Directives</a></li>
+						<li id="tab-columns"><a href="javascript:" onclick="ui.tab('_tray','columns')">Columns</a></li>
 					</ul>
 					<div class="toolbar">
 						<a title="Close this tray" href="javascript:" onclick="ui.help()">&times; Close</a>
 					</div>
 				</div>
-					<div id="_tray"><div id="_tray-commands"></div>
-						<div id="_tray-about" class="hidden">
+					<div id="_tray">
+						<div id="_tray-directives" class="hidden">
+							<h1>Directives</h1>
+							<div id="help-directives">
+
+							</div>
+						</div>
+						<div id="_tray-columns" class="hidden">
+							<h1>Columns</h1>
+							<p>Any line of text in the recipe is treated as a column definition unless it corresponds with any of the following exclusions &hellip;</p>
+							<ul>
+								<li>Lines that are directives</li>
+								<li>Blank or empty lines</li>
+								<li>Lines starting with <span class="mono">//</span> which are treated as comments</li>
+							</ul>
+							<p>
+								The simplest column definition is a string, for instance <span class="mono">hello world</span>. This will be used as the value for this column on every row of the output.
+							</p>
+							<p>
+								<strong>Variables</strong><br>
+								Variables are declared in the variables pane and can be reused as often as is needed.
+							</p>
+							<p>
+								Declare a variable by typing <span class="mono">key = value</span> in the variables pane. Use a variable by including <span class="mono">$key</span> in the recipe to see <span class="mono">value</span> in the CSV output.
+							</p>
+						</div>
+						<div id="_tray-about">
 							<img src="csvhorse.png" alt="cvshorse logo">
 							<h1>csvhorse</h1>
 							<span class="version"></span><br>
 							<p>
-								<strong>csvhorse</strong> generates CSV files from simple recipes typed in the left-hand pane. CSV output appears on the right when the recie is run. There is support for variables and functions for counting, random numbers, Lorem Ipsum, dates, and more &hellip;
+								<strong>csvhorse</strong> generates CSV files from simple recipes typed in the left-hand pane. CSV output appears on the right when the recipe is run. There is support for variables and functions for counting, random numbers, Lorem Ipsum, dates, and more &hellip;
 							</p>							
 							<p>
 								<a title="See an example" href="javascript:" onclick="ui.help();ui.example()">See an example</a>

@@ -12,15 +12,12 @@ VERSIONING
 - Help tray
   - self documenting, a la stringhorse.
 - do something with config.errors in everything
-
-0.5
-
-- 'order by' directive
 - number of words parameter(s) for @lorem
 - play with window resizing and scrollpane %ages
 
 1.0
 
+- 'order by' directive
 - HTML <table> view of the output
 
 **** IDEAS *************************************************************

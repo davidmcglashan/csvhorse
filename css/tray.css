@@ -21,8 +21,8 @@ section#tray {
 	z-index: 2;
 
 	display: flex;	/* Use flebox here. Tabs at the top, tab content filling the remaining container (with scrollbars) ... */
-  min-height: 100%;
-  flex-direction: column;
+	min-height: 100%;
+	flex-direction: column;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -58,72 +58,71 @@ section#tray {
 		}
 
 /* Restore relative position to the commands tray so its absolutely positioned content will scroll. */
-div#_tray-commands {
+div#_tray-directives {
 	position: relative;
-	padding: 0 2em 2em;
 } 
 	/* Rules are thin and spaced out. */
-	div#_tray-commands hr {
+	div#_tray-directives hr {
 		margin: 1.5em 0;
 		border-bottom: none;
 	}
 
 	/* The command list puts the commands on the left ... */
-	div#_tray-commands ul {
+	div#_tray-directives ul {
 		list-style-type: none;
 		padding-inline-start: 0em;
 		line-height: 1.4em;
 	}
-	div#_tray-commands li {
+	div#_tray-directives li {
 		color: var(--button-alt-fg);
 	}
 
 	/* ... and their short descriptions indented on the right. */
-	div#_tray-commands .help-desc {
+	div#_tray-directives .help-desc {
 		position: absolute;
 		display: inline-block;
 		left: 9em;	
 	}
 
 	/* Command parameters get softer styling. */
-	div#_tray-commands .params {
+	div#_tray-directives .params {
 		color: var(--button-alt-fg);
 	}
 
 	/* Keep all the help texts nicely aligned. */
-	div#_tray-commands p {
-		margin: 0.5em 0;
+	div#_tray-directives p {
+		margin: 0.1em 0 1.4em 0;
 		line-height: 1.25em;
 	}
-	div#_tray-commands p.command {
-		font-size: 150%;
+	div#_tray-directives p.command {
+		font-size: 115%;
 		margin: 0;
 		padding-left: unset;
 	}
-	div#_tray-commands > div.text p {
+	div#_tray-directives > div.text p {
 		margin-bottom: 1em;
 	}
-	div#_tray-commands p.see-also {
+	div#_tray-directives p.see-also {
 		color: var(--button-alt-fg);
 		margin: 1em 0.0 0.25em;
 	}
-	div#_tray-commands ul.see-also {
+	div#_tray-directives ul.see-also {
 		margin-block-start: 0;
 	}
-	div#_tray-commands ul.see-also li {
+	div#_tray-directives ul.see-also li {
 		position: relative;
 	}
-	div#_tray-commands ul.see-also li a:first-child {
+	div#_tray-directives ul.see-also li a:first-child {
 		font-weight: bold;
 	}
-	div#_tray-commands ul.see-also li a:nth-child(2) {
+	div#_tray-directives ul.see-also li a:nth-child(2) {
 		position: absolute;
 		display: block;
 		margin-left: 6em;
 		top: 0;
 	}
 
-	div#_tray-commands div.example {
+	div#_tray-directives div.example {
 		display: flex;
 		gap: 3em;
 		margin: 0.75em 1em 0.5em 0;
@@ -133,10 +132,10 @@ div#_tray-commands {
 		border-radius: 3px;
 		width: fit-content;
 	}
-		div#_tray-commands div.example>div{
+		div#_tray-directives div.example>div{
 			font-weight: bold;
 		}
-		div#_tray-commands div.example>div>pre {
+		div#_tray-directives div.example>div>pre {
 			font-weight: initial;
 			font-family: monospace;
 			border-top: 1px solid #aaa;
@@ -147,6 +146,8 @@ div#_tray-commands {
 		}
 
 /* Variables and About are slabs of text so get slabby, texty stylings. */
+div#_tray-directives,
+div#_tray-columns,
 div#_tray-variables,
 div#_tray-patterns,
 div#_tray-functions,
