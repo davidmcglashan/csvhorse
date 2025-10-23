@@ -233,13 +233,10 @@ const ui = {
 		for ( let year of years ) {
 			year.innerHTML = new Date().getFullYear()
 		}
-
-		addEventListener("resize", (event) => { ui.windowResized( event )})
 	},
 
 	buildHelp: () => {
 		let elem = document.getElementById( 'help-directives')
-
 		for (const [key, directive] of Object.entries(directives)) {
 			// Command and parameters
 			let p = document.createElement('p')
@@ -254,6 +251,34 @@ const ui = {
 			p = document.createElement('p')
 			p.innerHTML = directive['long']
 			elem.appendChild( p )			   
+		}
+
+		elem = document.getElementById( 'help-functions')
+		for (const [key, func] of Object.entries(funcs)) {
+			// Command and parameters
+			let p = document.createElement('p')
+			p.classList.add( 'command' )
+			p.innerHTML = `<strong>@${key}(</strong>\n`
+			if ( func['params'] !== undefined ) {
+				p.insertAdjacentHTML( 'beforeend', ' <span class="params">' + func['params'] + '</span>')
+			}
+			p.insertAdjacentHTML( 'beforeend', ' <strong>)</strong>')
+			elem.appendChild( p )
+
+			// Description.
+			p = document.createElement('p')
+			p.innerHTML = func['short']
+			elem.appendChild( p )			   
+
+			if ( func['long'] ) {
+				let ul = document.createElement('ul')
+				elem.appendChild( ul )
+				for ( let lng of func['long'] ) {
+					let li = document.createElement('li')
+					ul.appendChild( li )
+					li.innerHTML = lng
+				}
+			}
 		}
 	},
 

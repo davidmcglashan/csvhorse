@@ -11,9 +11,9 @@ VERSIONING
 **** Features *************************
 - Help tray
   - self documenting, a la stringhorse.
+- time(step) should start from now and step
 - do something with config.errors in everything
 - number of words parameter(s) for @lorem
-- play with window resizing and scrollpane %ages
 
 1.0
 

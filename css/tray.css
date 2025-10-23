@@ -58,71 +58,71 @@ section#tray {
 		}
 
 /* Restore relative position to the commands tray so its absolutely positioned content will scroll. */
-div#_tray-directives {
+div.generated {
 	position: relative;
 } 
 	/* Rules are thin and spaced out. */
-	div#_tray-directives hr {
+	div.generated hr {
 		margin: 1.5em 0;
 		border-bottom: none;
 	}
 
 	/* The command list puts the commands on the left ... */
-	div#_tray-directives ul {
+	div.generated ul {
 		list-style-type: none;
 		padding-inline-start: 0em;
 		line-height: 1.4em;
 	}
-	div#_tray-directives li {
+	div.generated li {
 		color: var(--button-alt-fg);
 	}
 
 	/* ... and their short descriptions indented on the right. */
-	div#_tray-directives .help-desc {
+	div.generated .help-desc {
 		position: absolute;
 		display: inline-block;
 		left: 9em;	
 	}
 
 	/* Command parameters get softer styling. */
-	div#_tray-directives .params {
+	div.generated .params {
 		color: var(--button-alt-fg);
 	}
 
 	/* Keep all the help texts nicely aligned. */
-	div#_tray-directives p {
+	div.generated p {
 		margin: 0.1em 0 1.4em 0;
 		line-height: 1.25em;
 	}
-	div#_tray-directives p.command {
+	div.generated p.command {
 		font-size: 115%;
 		margin: 0;
 		padding-left: unset;
 	}
-	div#_tray-directives > div.text p {
+	div.generated > div.text p {
 		margin-bottom: 1em;
 	}
-	div#_tray-directives p.see-also {
+	div.generated p.see-also {
 		color: var(--button-alt-fg);
 		margin: 1em 0.0 0.25em;
 	}
-	div#_tray-directives ul.see-also {
+	div.generated ul.see-also {
 		margin-block-start: 0;
 	}
-	div#_tray-directives ul.see-also li {
+	div.generated ul.see-also li {
 		position: relative;
 	}
-	div#_tray-directives ul.see-also li a:first-child {
+	div.generated ul.see-also li a:first-child {
 		font-weight: bold;
 	}
-	div#_tray-directives ul.see-also li a:nth-child(2) {
+	div.generated ul.see-also li a:nth-child(2) {
 		position: absolute;
 		display: block;
 		margin-left: 6em;
 		top: 0;
 	}
 
-	div#_tray-directives div.example {
+	div.generated div.example {
 		display: flex;
 		gap: 3em;
 		margin: 0.75em 1em 0.5em 0;
@@ -132,10 +132,10 @@ div#_tray-directives {
 		border-radius: 3px;
 		width: fit-content;
 	}
-		div#_tray-directives div.example>div{
+		div.generated div.example>div{
 			font-weight: bold;
 		}
-		div#_tray-directives div.example>div>pre {
+		div.generated div.example>div>pre {
 			font-weight: initial;
 			font-family: monospace;
 			border-top: 1px solid #aaa;
@@ -146,7 +146,7 @@ div#_tray-directives {
 		}
 
 /* Variables and About are slabs of text so get slabby, texty stylings. */
-div#_tray-directives,
+div.generated,
 div#_tray-columns,
 div#_tray-variables,
 div#_tray-patterns,

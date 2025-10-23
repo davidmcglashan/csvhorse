@@ -63,21 +63,22 @@
 					<ul id="_tray-ul">
 						<li id="tab-about" class="selected"><a href="javascript:" onclick="ui.tab('_tray','about')">About</a></li>
 						<li id="tab-directives"><a href="javascript:" onclick="ui.tab('_tray','directives')">Directives</a></li>
-						<li id="tab-columns"><a href="javascript:" onclick="ui.tab('_tray','columns')">Columns</a></li>
+						<li id="tab-columns"><a href="javascript:" onclick="ui.tab('_tray','columns')">Columns &amp; Variables</a></li>
+						<li id="tab-patterns"><a href="javascript:" onclick="ui.tab('_tray','patterns')">Patterns</a></li>
+						<li id="tab-functions"><a href="javascript:" onclick="ui.tab('_tray','functions')">Functions</a></li>
 					</ul>
 					<div class="toolbar">
 						<a title="Close this tray" href="javascript:" onclick="ui.help()">&times; Close</a>
 					</div>
 				</div>
 					<div id="_tray">
-						<div id="_tray-directives" class="hidden">
-							<h1>Directives</h1>
-							<div id="help-directives">
-
-							</div>
+						<div id="_tray-directives" class="hidden generated">
+							<p>
+								Directives control aspects of the CSV file's appearance or format, but not its content. Each directive is a single command entered on its own line. Directives can be omitted entirely and the default CSV behaviour will be used: 10 rows, as many columns as you define, no header, etc.
+							</p>
+							<div id="help-directives"></div>
 						</div>
 						<div id="_tray-columns" class="hidden">
-							<h1>Columns</h1>
 							<p>Any line of text in the recipe is treated as a column definition unless it corresponds with any of the following exclusions &hellip;</p>
 							<ul>
 								<li>Lines that are directives</li>
@@ -85,15 +86,54 @@
 								<li>Lines starting with <span class="mono">//</span> which are treated as comments</li>
 							</ul>
 							<p>
-								The simplest column definition is a string, for instance <span class="mono">hello world</span>. This will be used as the value for this column on every row of the output.
+								The simplest column definition is a string, for instance a line reading <span class="mono">hello world</span> will cause this string to be used as the value for a column on every row of the output. The left-most column is defined first when reading the recipe from top-to-bottom.
 							</p>
+							<h2>Variables</h2>
 							<p>
-								<strong>Variables</strong><br>
 								Variables are declared in the variables pane and can be reused as often as is needed.
 							</p>
 							<p>
 								Declare a variable by typing <span class="mono">key = value</span> in the variables pane. Use a variable by including <span class="mono">$key</span> in the recipe to see <span class="mono">value</span> in the CSV output.
 							</p>
+						</div>
+						<div id="_tray-patterns" class="hidden">
+							<p>
+								CSVs created using only strings and variables will be quite boring since all the rows will be the same. Patterns are one way of introducing randomised or dynamic content, particularly concerned with strings such as serial or telephone numbers, codes strings, vehicle registrations, and so on.
+							</p>
+							<h2>Using patterns</h2>
+							<p>
+								Patterns are declared in the variables pane in the normal fashion.
+							</p>
+							<p>
+								<span class="mono">foo = {111}-{AAA*}</span>
+							</p>
+							<p>
+								To include the output of a pattern in a column of the CSV, invoke it with %. Invoking a pattern with $ will do so as if it were a variable and will simply reproduce its definition.
+							</p>
+							<p>
+								<span class="mono">%foo</span>
+							</p>
+							<p>
+								When invoked with %, the pattern text is included verbatim but &hellip;
+								<ul>
+									<li>any 1 character appearing between a { and a } will be replaced with a random digit.</li>
+									<li>any A character appearing between a { and a } will be replaced with a random uppercase letter.</li>
+									<li>any * character appearing between a { and a } will be replaced with a random digit or uppercase letter.</li>
+								</ul>
+								Thus, the example <span class="mono">foo</span> above might become any of the following in the output &hellip;
+								<ul>
+									<li><span class="mono">123-ABC1</span></li>
+									<li><span class="mono">443-QRTX</span></li>
+									<li><span class="mono">263-BHCH</span></li>
+									<li><span class="mono">881-LIM9</span></li>
+								</ul>
+							</p>
+						</div>
+						<div id="_tray-functions" class="hidden generated">
+							<p>
+								Functions add specialised random content to a column. They are preceded with an @ symbol and accept parameters delimited by ( and ). Functions can be called from column definitions directly or used in variable values.
+							</p>
+							<div id="help-functions"></div>
 						</div>
 						<div id="_tray-about">
 							<img src="csvhorse.png" alt="cvshorse logo">

@@ -6,6 +6,12 @@ Try CSVhorse online at https://csvhorse.mcglashan.net/
 
 ## Changelog
 
+### version 0.2.8
+- Help tray now complete, but maybe not finished.
+
+### version 0.2.7
+- Window resizing and scrollpane dragging has been overhauled.
+
 ### version 0.2.6
 * Appearance tweak for the run button.
 * Example is no longer a stringhorse example.
