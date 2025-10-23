@@ -5,6 +5,13 @@ const ui = {
 	clearAll: () => {
 		document.getElementById('rec').value = ''
 		localStorage['csvhorse.recipe'] = ''
+		
+		ui.ratio = 30
+		localStorage['csvhorse.ui_ratio'] = 30
+		document.getElementById( 'input' ).style.right = 'calc(' + (100-ui.ratio) + 'vw + 1px)'
+		document.getElementById( 'output' ).style.left = 'calc(' + ui.ratio + 'vw + 7px)'
+		document.getElementById( 'gripper' ).style.left = 'calc(' + ui.ratio + 'vw)'
+		
 		recipe.execute()
 	},
 
@@ -127,18 +134,14 @@ const ui = {
 		}
 
 		// Re-establish the left and right for each pane
-		let ids = [ 'input','output','gripper' ]
-		for ( let id of ids ) {
-			let elem = document.getElementById( id )
-			let left = localStorage['csvhorse.'+id+'_left']
-			if ( left ) {
-				elem.style.left = left
-			}
-			let right = localStorage['csvhorse.'+id+'_right']
-			if ( right ) {
-				elem.style.right = right
-			}
+		if ( localStorage['csvhorse.ui_ratio'] ) {
+			ui.ratio = localStorage['csvhorse.ui_ratio']
+		} else {
+			ui.ratio = 30
 		}
+		document.getElementById( 'input' ).style.right = 'calc(' + (100-ui.ratio) + 'vw + 1px)'
+		document.getElementById( 'output' ).style.left = 'calc(' + ui.ratio + 'vw + 7px)'
+		document.getElementById( 'gripper' ).style.left = 'calc(' + ui.ratio + 'vw)'
 
 		// Are we doing dark mode?
 		if ( localStorage.hasOwnProperty( 'csvhorse.dark' ) && localStorage['csvhorse.dark'] === 'true' ) {
@@ -215,6 +218,7 @@ const ui = {
 	 * Initialise the UI. To be called once at point of page load.
 	 */
 	init: () => {
+		ui.buildHelp()
 		ui.restoreState()
 		ui.fixTabIndex()
 
@@ -233,17 +237,32 @@ const ui = {
 		addEventListener("resize", (event) => { ui.windowResized( event )})
 	},
 
+	buildHelp: () => {
+		let elem = document.getElementById( 'help-directives')
+
+		for (const [key, directive] of Object.entries(directives)) {
+			// Command and parameters
+			let p = document.createElement('p')
+			p.classList.add( 'command' )
+			p.innerHTML = `<strong>${key}</strong>\n`
+			if ( directive['params'] !== undefined ) {
+				p.insertAdjacentHTML( 'beforeend', ' <span class="params">' + directive['params'] + '</span>')
+			}
+			elem.appendChild( p )
+
+			// Description.
+			p = document.createElement('p')
+			p.innerHTML = directive['long']
+			elem.appendChild( p )			   
+		}
+	},
+
 	/**
 	 * Starts a drag on the gripper between the two columns.
 	 */
 	dragStart: ( ev ) => {
 		ev.preventDefault()
 		
-		ui.dragLeftElem = document.getElementById('input')
-		ui.dragRightElem = document.getElementById('output')
-		ui.dragGripElem = document.getElementById('gripper')
-		ui.limit = window.innerWidth - ui.dragLeftElem.getBoundingClientRect().left
-
 		document.onmousemove = ui.drag
 		document.onmouseup = ui.endDrag
 	},
@@ -252,15 +271,15 @@ const ui = {
 	 * Called during a drag on the left gripper. Maintains the pane sizes.
 	 */
 	drag: ( ev ) => {
-		let width = window.innerWidth - ev.clientX
+		ui.ratio = ( ev.clientX / window.innerWidth ) * 100
 		
 		// Constrain the new width to prevent any pane getting too small.
-		width = Math.max( 320, width )
-		width = Math.min( width, ui.limit - 176 )
+		ui.ratio = Math.max( 15, ui.ratio )
+		ui.ratio = Math.min( ui.ratio, 85 )
 
-		ui.dragLeftElem.style.right = (width+5) + 'px'
-		ui.dragRightElem.style.left = (window.innerWidth-width+3) + 'px'
-		ui.dragGripElem.style.left = (window.innerWidth-width-4) + 'px'
+		document.getElementById( 'input' ).style.right = 'calc(' + (100-ui.ratio) + 'vw + 1px)'
+		document.getElementById( 'output' ).style.left = 'calc(' + ui.ratio + 'vw + 7px)'
+		document.getElementById( 'gripper' ).style.left = 'calc(' + ui.ratio + 'vw)'
 	},
 
 	/**
@@ -269,28 +288,7 @@ const ui = {
 	endDrag: ( ev ) => {
 		document.onmouseup = null
 		document.onmousemove = null
-
-		let ids = [ 'input','output','gripper' ]
-		for ( let id of ids ) {
-			let elem = document.getElementById( id )
-			localStorage['csvhorse.'+id+'_left'] = elem.style.left
-			localStorage['csvhorse.'+id+'_right'] = elem.style.right
-		}
-	},
-
-	/**
-	 * Called when the window is resized. Obliterates all the manual sizing styles so
-	 * the layout falls back to the CSS which is width %ages.
-	 */
-	windowResized: ( ev ) => {
-		let ids = [ 'input','output','gripper' ]
-		for ( let id of ids ) {
-			let elem = document.getElementById( id )
-			elem.style.left = ''
-			elem.style.right = ''
-			localStorage['csvhorse.'+id+'_left'] = elem.style.left
-			localStorage['csvhorse.'+id+'_right'] = elem.style.right
-		}
+		localStorage['csvhorse.ui_ratio'] = ui.ratio
 	},
 
 	/**

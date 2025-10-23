@@ -18,10 +18,10 @@ section#ui {
 
 	section#ui > div#input {
 		left: 0;
-		right: calc(50vw + 1px);
+		right: calc(70vw + 1px);
 	}
 	section#ui > div#output {
-		left: calc(50vw + 7px);
+		left: calc(30vw + 7px);
 		right: 0;
 	}
 
@@ -33,7 +33,7 @@ section#ui {
 		cursor: ew-resize;
 		display: flex;
 		align-items: center;
-		left: calc(50vw);
+		left: calc(30vw);
 	}
 	section#ui > div.gripper:hover {
 		background-color: var(--button-bg);

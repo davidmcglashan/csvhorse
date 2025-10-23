@@ -197,6 +197,11 @@ pre {
 	font-style: normal;
 }
 
+span.mono {
+	background-color: var(--example-bg);
+	border: 1px solid var(--example-border);
+}
+
 /* Used only by the info command. */
 .scrollpane {
 	overflow: auto;
