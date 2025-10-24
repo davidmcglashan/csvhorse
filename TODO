@@ -8,7 +8,6 @@ VERSIONING
 **** Bugs ***********************
 
 **** Features *************************
-- time(step) should start from now and step
 - do something with config.errors in everything
 - number of words parameter(s) for @lorem
 - tidy up the help tray CSS

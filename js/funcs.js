@@ -70,6 +70,53 @@ const funcs = {
 			return func.current
 		}
 	},
+	
+	/**
+	 * Implements a random number generator. The genreated value is returned for inclusion in the CSV.
+	 */
+	rng: {
+		params: "(min),(max)",
+		short: "Random number generator",
+		long: [
+			'@rng() generates a number between 1 and 100',
+			'@rng(10) generates a number between 1 and 10',
+			'@rng(25,75) generates a number between 25 and 75'
+		],
+		func: ( func ) => {
+			// Set the function up if it hasn't yet been.
+			if ( !func.max ) {
+				func.max = 100
+				func.min = 1
+
+				// We may have one or two comma-separated numbers in the variables.
+				if ( func.vars ) {
+					let vars = func.vars.split( ',' )
+
+					// One parameter means we're changing the max.
+					if ( vars.length === 1 ) {
+						let max = parseInt( vars[0] )
+						if ( !isNaN( max ) ) {
+							func.max = max
+						}
+					}
+
+					// Two parameters means changing both min and max
+					if ( vars.length > 1 ) {
+						let min = parseInt( vars[0] )
+						if ( !isNaN( min ) ) {
+							func.min = min
+						}
+						let max = parseInt( vars[1] )
+						if ( !isNaN( max ) ) {
+							func.max = max
+						}
+					}
+				}
+			}
+
+			return random.get( func.min, func.max )
+		}
+	},
 
 	/**
 	 * Implements a date using the function's saved state to increment. 
@@ -240,26 +287,31 @@ const funcs = {
 							func.format = vars[i]
 						}
 					}
-		
-					if ( func.step && func.randomise ) {
-						func.hour = random.get(func.min,func.max)
+				}
+
+				if ( func.randomise ) {
+					func.hour = random.get(func.min,func.max)
+					func.minute = random.get(0,59)
+					func.second = random.get(0,59)
+					if ( func.step ) {
+						func.randomise = false
 					}
 				}
 			}
 			
 			// Are we set to randomise the minutes and seconds with every iteration?
 			if ( func.randomise )  {
-				if ( func.step ) {
-					func.minute += random.get(2,20)
-					if ( func.minute > 59 ) {
-						func.hour += 1
-						func.minute -= 60
-					}
-				} else {
-					func.hour = random.get(func.min,func.max)
-					func.minute = random.get(0,59)
+				func.hour = random.get(func.min,func.max)
+				func.minute = random.get(0,59)
+				func.second = random.get(0,59)
+			}
+
+			else if ( func.step ) {
+				func.minute += random.get(2,20)
+				if ( func.minute > 59 ) {
+					func.hour += 1
+					func.minute -= 60
 				}
-				
 				func.second = random.get(0,59)
 			}
 
@@ -273,53 +325,6 @@ const funcs = {
 			} else {
 				return `${hh}:${mm}.${ss}`
 			}
-		}
-	},
-	
-	/**
-	 * Implements a random number generator. The genreated value is returned for inclusion in the CSV.
-	 */
-	rng: {
-		params: "(min),(max)",
-		short: "Random number generator",
-		long: [
-			'@rng() generates a number between 1 and 100',
-			'@rng(10) generates a number between 1 and 10',
-			'@rng(25,75) generates a number between 25 and 75'
-		],
-		func: ( func ) => {
-			// Set the function up if it hasn't yet been.
-			if ( !func.max ) {
-				func.max = 100
-				func.min = 1
-
-				// We may have one or two comma-separated numbers in the variables.
-				if ( func.vars ) {
-					let vars = func.vars.split( ',' )
-
-					// One parameter means we're changing the max.
-					if ( vars.length === 1 ) {
-						let max = parseInt( vars[0] )
-						if ( !isNaN( max ) ) {
-							func.max = max
-						}
-					}
-
-					// Two parameters means changing both min and max
-					if ( vars.length > 1 ) {
-						let min = parseInt( vars[0] )
-						if ( !isNaN( min ) ) {
-							func.min = min
-						}
-						let max = parseInt( vars[1] )
-						if ( !isNaN( max ) ) {
-							func.max = max
-						}
-					}
-				}
-			}
-
-			return random.get( func.min, func.max )
 		}
 	},
 	
