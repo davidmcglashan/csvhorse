@@ -336,8 +336,9 @@ const funcs = {
 		short: "Insert strings of Lorem Ipsum text",
 		long: [
 			'@lorem() returns 5 words of lorem ipsum',
-	 		'@lorem(10) returns 10 words of lorem ipsum',
-			'@lorem(7 random) returns 7 _random_ words of lorem ipsum'
+	 		'@lorem(10) returns the first 10 words of lorem ipsum',
+			'@lorem(7 random) returns 7 _random_ words of lorem ipsum',
+			'@lorem(7 random spread) returns 5-to-9 _random_ words of lorem ipsum'
 		],
 		func: ( func ) => {
 			// Set the function up if it hasn't yet been.
@@ -345,10 +346,12 @@ const funcs = {
 				func.numberOfWords = 5
 				func.random = false
 				func.capitalise = true
+				func.spread = false 
 
 				if ( func.vars ) {
-					// An 'r' means random words from the sequence, 'c' means capitalise the first word (like a sentence)
 					func.random = func.vars.indexOf( 'random' ) != -1
+					func.spread = func.vars.indexOf( 'spread' ) != -1
+
 					//func.capitalise = func.vars.indexOf( 'c' ) != -1
 					func.numberOfWords = Math.min( 35, parseInt(func.vars) )
 					if ( func.numberOfWords === 0 || isNaN(func.numberOfWords)) {
@@ -359,14 +362,20 @@ const funcs = {
 
 			const lipsum = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'.split(' ')
 			let ret = ''
+			
+			// Tweak the number of words to be _around_ func.numberOfWords
+			let numberOfWords = func.numberOfWords
+			if ( func.spread ) {
+				numberOfWords = random.get( numberOfWords*0.6, numberOfWords*1.25 )
+			}
 
-			for ( let i=0; i<func.numberOfWords; i++ ) {
+			// Output the lorem text. Capitalise the first letter.
+			for ( let i=0; i<numberOfWords; i++ ) {
 				if ( i > 0 ) {
 					ret += ' '
 				}
 				ret += func.random ? lipsum[random.get(0,35)] : lipsum[i]
 			}
-		
 			if ( func.capitalise && ret.length > 0 ) {
 				ret = ret[0].toUpperCase() + ret.substring( 1 )
 			}
