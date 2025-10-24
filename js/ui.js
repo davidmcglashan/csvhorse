@@ -23,9 +23,14 @@ const ui = {
 		document.getElementById(ta+'-wrap-button').classList.toggle( 'wrap' )
 
 		if ( document.getElementById(ta).classList.contains( 'wrap' ) ) {
-			localStorage['csvhorse.wrap-'+ta] = 'true'
+			localStorage['csvhorse.wrap-'+ta] = 'false'
 		} else {
-			localStorage.removeItem( 'csvhorse.wrap-'+ta )
+			localStorage['csvhorse.wrap-'+ta] = 'true'
+		}
+
+		// Also wrap the variables if we're wrapping the recipe.
+		if ( ta === 'rec' ) {
+			document.getElementById('vars').classList.toggle( 'wrap' )
 		}
 	},
 
@@ -142,6 +147,17 @@ const ui = {
 		document.getElementById( 'input' ).style.right = 'calc(' + (100-ui.ratio) + 'vw + 1px)'
 		document.getElementById( 'output' ).style.left = 'calc(' + ui.ratio + 'vw + 7px)'
 		document.getElementById( 'gripper' ).style.left = 'calc(' + ui.ratio + 'vw)'
+
+		// And are those panes wrapping their text?
+		if ( localStorage['csvhorse.wrap-rec'] === 'false' ) {
+			document.getElementById( 'rec-wrap-button' ).classList.add( 'wrap' )
+			document.getElementById( 'rec' ).classList.add( 'wrap' )
+			document.getElementById( 'vars' ).classList.add( 'wrap' )
+		}
+		if ( localStorage['csvhorse.wrap-out'] === 'false' ) {
+			document.getElementById( 'out-wrap-button' ).classList.add( 'wrap' )
+			document.getElementById( 'out' ).classList.add( 'wrap' )
+		}
 
 		// Are we doing dark mode?
 		if ( localStorage.hasOwnProperty( 'csvhorse.dark' ) && localStorage['csvhorse.dark'] === 'true' ) {

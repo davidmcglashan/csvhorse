@@ -6,14 +6,12 @@ VERSIONING
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
 **** Bugs ***********************
-- Wrap states are restored (not on stringhorse either)
 
 **** Features *************************
-- Help tray
-  - self documenting, a la stringhorse.
 - time(step) should start from now and step
 - do something with config.errors in everything
 - number of words parameter(s) for @lorem
+- tidy up the help tray CSS
 
 1.0
 
@@ -23,5 +21,3 @@ VERSIONING
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
   - import/export state - keeps recipes and variables
-- skipping numbers on a @count() sequence
-- headers - declared in defn - can be blank

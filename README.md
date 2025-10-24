@@ -6,6 +6,10 @@ Try CSVhorse online at https://csvhorse.mcglashan.net/
 
 ## Changelog
 
+### version 0.2.9
+- The two wrap settings are now properly persisted and restored from session to session.
+
+
 ### version 0.2.8
 - Help tray now complete, but maybe not finished.
 
