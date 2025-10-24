@@ -6,7 +6,7 @@ Try CSVhorse online at https://csvhorse.mcglashan.net/
 
 ## Changelog
 
-### version 0.2.9
+### version 1.0.0
 - The two wrap settings are now properly persisted and restored from session to session.
 - time(step) now works properly, starting from now and stepping forwards.
 - lorem() now supports a spread parameter to write different numbers of words each time.
