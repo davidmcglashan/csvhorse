@@ -389,28 +389,28 @@ const funcs = {
 	 * @oneof(foo) => A random entry from the list in $foo variable
 	 */
 	oneof: {
-		params: "[variable]",
-		short: "Selects a random entry from a variable's value which was defined as a comma-separated list",
+		params: "[list]",
+		short: "Selects a random entry from the comma-separated list",
 		long: [
-			'@oneof(foo) inserts a random entry from the list in $foo variable'
+			'@oneof(a,b,c) inserts a, b, or c, decided randomly'
 		],
-			func: ( func ) => {
+		func: ( func ) => {
 			if ( !func.entries ) {
 				// Use an empty list if we can't find the specified list.
 				func.entries = ['']
-
+				
 				if ( func.vars ) {
-					let list = recipe.variables[func.vars.trim()]
+					let list = func.vars.trim()
 					if ( list ) {
 						func.entries = list.split( ',' )
 					}
 				}
 			}
-
+			
 			return func.entries[ random.get( 0, func.entries.length-1 ) ]
 		}
 	},
-
+	
 	/**
 	 * Generates a random UUID for inclusion in the CSV. Takes no parameters, maintains no state!
 	 */

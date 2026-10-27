@@ -27,11 +27,6 @@ const ui = {
 		} else {
 			localStorage['csvhorse.wrap-'+ta] = 'true'
 		}
-
-		// Also wrap the variables if we're wrapping the recipe.
-		if ( ta === 'rec' ) {
-			document.getElementById('vars').classList.toggle( 'wrap' )
-		}
 	},
 
 	/**
@@ -92,16 +87,21 @@ const ui = {
 	 * Shows an example based on the page source.
 	 */
 	example: () => {
-		document.getElementById('rec').value = '// How big is the output?\n' +
-		'rows 25\n' +
-		'columns 6\n' +
+		document.getElementById('rec').value = 'rows 10\n' +
+		'header on\n' +
+		'//seed 1\n' +
+		'//separator ;\n' +
 		'\n' +
-		'// Strings are included as is\n' +
-		'hello world\n' +
+		'variables:\n' +
+		'foo=foo,bar,pip\n' +
 		'\n' +
-		'// Count in ones or twos\n' +
-		'@count()\n' +
+		'// This header is ignored\n' +
+		'A number\n' +
 		'@count(step 2)\n' +
+		'\n' +
+		'A hidden number\n' +
+		'@count(step 2)\n' +
+		'off' +
 		'\n' +
 		'// 5 random words of lorem ipsum\n' +
 		'@lorem(5 random)\n' +
@@ -127,17 +127,6 @@ const ui = {
 		recipeText.value = localStorage['csvhorse.recipe'] !== undefined ? localStorage['csvhorse.recipe'] : ''
 		recipeText.addEventListener( 'keydown', ui.cmdEnter )
 
-		// 
-		let varsText = document.getElementById('vars')
-		varsText.value = localStorage['csvhorse.variables'] !== undefined ? localStorage['csvhorse.variables'] : ''
-		varsText.addEventListener( 'keydown', ui.cmdEnter )
-
-		// Set the size of the variables panel. 'vars-small' is the default.
-		let size = localStorage['csvhorse.vars-size']
-		if ( size !== undefined ) {
-			document.getElementById( 'variables' ).classList.replace( 'vars-small', size )
-		}
-
 		// Re-establish the left and right for each pane
 		if ( localStorage['csvhorse.ui_ratio'] ) {
 			ui.ratio = localStorage['csvhorse.ui_ratio']
@@ -152,7 +141,6 @@ const ui = {
 		if ( localStorage['csvhorse.wrap-rec'] === 'false' ) {
 			document.getElementById( 'rec-wrap-button' ).classList.add( 'wrap' )
 			document.getElementById( 'rec' ).classList.add( 'wrap' )
-			document.getElementById( 'vars' ).classList.add( 'wrap' )
 		}
 		if ( localStorage['csvhorse.wrap-out'] === 'false' ) {
 			document.getElementById( 'out-wrap-button' ).classList.add( 'wrap' )
@@ -181,11 +169,6 @@ const ui = {
 			clearTimeout(recipeTimerId);
 			recipeTimerId = setTimeout( ui.storage, 750 );
 		});
-		let varsTimerId = 0;
-		varsText.addEventListener("keyup", function(event) {
-			clearTimeout(varsTimerId);
-			varsTimerId = setTimeout( ui.storage, 750 );
-		});
 	},
 
 	/**
@@ -193,7 +176,6 @@ const ui = {
 	 */
 	storage: () => {
 		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
-		localStorage['csvhorse.variables'] = document.getElementById('vars').value
 	},
 
 	/**
@@ -219,15 +201,6 @@ const ui = {
 		html.classList.toggle('dark')
 
 		localStorage['csvhorse.dark'] = html.classList.contains('dark')
-	},
-
-	/**
-	 * Switch up the size of the variables pane. 
-	 */
-	vars: ( size ) => {
-		let div = document.getElementById('variables')
-		div.setAttribute('class', size)
-		localStorage['csvhorse.vars-size'] = size
 	},
 
 	/**

@@ -1,23 +1,5 @@
 const directives = {
 	/**
-	 * Set the number of columns in the output.
-	 */
-	columns: {
-		params: "[number]",
-		short: "Set the number of columns shown the output",
-		long: "Can be omitted entirely and all the columns defined in the recipe will be shown.",
-		func: ( tokens, config ) => {
-			let cols = parseInt(tokens[1])
-			if ( isNaN( cols ) ) {
-				config.errors.push( 'Columns requires a number')
-			} else {
-				config.columns.count = cols
-				config.columns.stated = true
-			}
-		}
-	},
-
-	/**
 	 * Set the number of rows in the output.
 	 */
 	rows: {
@@ -101,6 +83,14 @@ const directives = {
 				}
 			}
 			config.errors.push( 'Separator must be one of: , . ; : / |')
+		}
+	},
+
+	parse: ( line, config ) => {	
+		let tokens = line.split( ' ' )
+		let directive = directives[tokens[0]]
+		if ( directive ) {
+			directive.func( tokens, config )
 		}
 	}
 };

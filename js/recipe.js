@@ -3,7 +3,7 @@ const recipe = {
 	// - Major releases see significant change to the feature set e.g. multiple minors.
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
-	version: "v1.0.0",
+	version: "v2.0.0-latest",
 
 	/*
 	* Executes the currently entered recipe.
@@ -12,96 +12,103 @@ const recipe = {
 		// Tidy up the UI.
 		recipe.clearLog()
 		
-		// Get the variables and the default configuration ...
-		recipe.parseVariables()
+		// Create an object describing our default configuration ...
 		let config = {
 			rows: 10,
 			columns: {
-				stated: false,
-				count: 5,
-				defns: []
+				blueprints: [],
+				models: []
 			},
 			separator: ',',
 			errors: []
 		}
 		let error = null
 
-		// Get the recipe text, split by newlines so we can parse each one in turn. 
-		let recipeLines = document.getElementById('rec').value.split('\n')
-		
-		for ( let line of recipeLines ) {
-			// Ignore comments and blank lines
-			if ( line.length === 0 || line.startsWith('//') ) {
+		// A first pass strips all the comments from the recipe file.
+		let inText = ''
+		for ( let line of document.getElementById('rec').value.trim().split('\n') ) {
+			line = line.trim()
+			if ( line.startsWith( '//' ) ) {
 				continue
 			}
-
-			// If the line is a directive then let it update the config.
-			let tokens = line.split( ' ' )
-			let directive = directives[tokens[0]]
-			if ( directive ) {
-				directive.func( tokens, config )
-				continue
-			}
-
-			// Treat this line as a column definition.
-			config.columns.defns.push(line)
+			inText += line + '\n'
 		}
 
-		// Model is a table model for the CSV. We build this before we show it onscreen.
-		let model = {}
-		model.rows = []
-		model.header = []
+		// Get the recipe text, split by double newlines so we can parse each block in turn. 
+		let recipeBlocks = inText.split('\n\n')
 
+		// The first block is always always the directives
+		for ( let line of recipeBlocks[0].split( '\n' ) ) {
+			directives.parse( line, config )
+		}
+
+		// Variables are declared in the next block if it is so annoted ...
+		let i = 1
+		if ( recipeBlocks[i].startsWith( 'variables:\n' ) ) {
+			recipe.parseVariables( recipeBlocks[i] )
+			i += 1
+		}
+
+		// Everything else is a column
+		for ( ; i<recipeBlocks.length; i+= 1 ) {
+			config.columns.blueprints.push( recipeBlocks[i] )
+		}
+
+		// csvModel is a table model for the CSV. We declare all the storage here.
+		let csvModel = {}
+		csvModel.rows = []
+		csvModel.header = []
 		for ( let r=0; r<config.rows; r+=1 ) {
 			let row = {}
-			model.rows[r] = row
+			csvModel.rows[r] = row
 			row.columns = []
-
-			// If the row is empty we can sometimes skip doing any string work.
-			row.isEmpty = config.rowsEmptyPercentage && random.get( 0, 100 ) < config.rowsEmptyPercentage
 		}
 
-		// The number of columns shown is the number of definitions received ...
-		let numberOfCols = config.columns.defns.length
+		// The number of columns shown is the number of blueprints received ...
+		let numberOfCols = config.columns.blueprints.length
 		
-		// ... unless the number of columns was stated in the input.
-		if ( config.columns.stated ) {
-			numberOfCols = config.columns.count
-		}
-
-		// At this point we have the number of rows and columns, and all the definitions
-		// so we can start generating content into the model.
+		// At this point we have the number of rows and columns, and all the blueprints
+		// so we can start generating content into the csvModel.
 		for ( let c=0; c<numberOfCols; c+=1 ) {
-			let defn = config.columns.defns[c]
+			let blueprint = config.columns.blueprints[c]
+			if ( blueprint === 'stop' ) {
+				numberOfCols = c
+				break
+			}
 
-			// Process the definition to get an array of tokens.
-			let spec = recipe.getSpecification( defn )
+			// Process the blueprint to get a column model. Failure means this column is hidden
+			// so we shouldn't process it any further.
+			let columnModel = recipe.getColumnModel( blueprint )
+			config.columns.models[c] = columnModel
+			if ( columnModel.hidden ) {
+				continue
+			}
 
-			// Did the spec contain any header information?
-			if ( spec.header ) {
-				model.header[c] = spec.header
-				model.showHeader = true
+			// Does the columnModel contain any header information?
+			if ( columnModel.header ) {
+				csvModel.header[c] = columnModel.header
+				csvModel.showHeader = true
 			}
 
 			// Now use it to generate content for each row!
 			for ( let r=0; r<config.rows; r+=1 ) {
 				let column = {}
-				model.rows[r].columns[c] = column
+				csvModel.rows[r].columns[c] = column
 
 				// Start with an empty string we'll concatenate to.
 				column.content = ''
-				column.isAlwaysShown = spec.isAlwaysShown
+				column.isAlwaysShown = columnModel.isAlwaysShown
 
-				// If the spec has an emptyPercentage we can sometimes skip doing any string work.
-				if ( spec.emptyPercentage ) {
-					if ( random.get( 0, 100 ) < spec.emptyPercentage ) {
+				// If the columnModel has an emptyPercentage we can sometimes skip doing any string work.
+				if ( columnModel.emptyPercentage ) {
+					if ( random.get( 0, 100 ) < columnModel.emptyPercentage ) {
 						continue
 					}
 				}
 
 				// Otherwise cell content is achieved by evaluating and concatenating tokens
 				// into the column cell's content.
-				for ( let token of spec.tokens ) {
+				for ( let token of columnModel.tokens ) {
 					// If the token is a string we can simply concat
 					if ( typeof token === 'string' ) {
 						column.content += token
@@ -124,19 +131,24 @@ const recipe = {
 		let str = ''
 
 		// Show the header if the various configurations specifies one ...
-		//  1. if the model asks for one and the config doesn't disallow it
+		//  1. if the csvModel asks for one and the config doesn't disallow it
 		//  2. the config explicitly allows it
 		if ( 
-			(model.showHeader && !config.showHeader)
+			(csvModel.showHeader && !config.showHeader)
 			|| (config.showHeader === 'on')
 		) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
+				let columnModel = config.columns.models[c]
+				if ( columnModel.hidden ) {
+					continue
+				}
+
 				if ( c > 0 ) {
 					str += config.separator
 				}
 
-				if ( model.header[c] ) {
-					str += recipe.makeSafe( model.header[c], config )
+				if ( csvModel.header[c] ) {
+					str += recipe.makeSafe( csvModel.header[c], config )
 				} else {
 					if ( config.headerFormat === 'letters' ) {
 						str += recipe.makeSafe( 'Column '+(String.fromCharCode(c+65)), config )
@@ -149,10 +161,14 @@ const recipe = {
 		}
 
 		// Now the table body
-		for ( let r=0; r<model.rows.length; r+=1 ) {
-			let row = model.rows[r]
+		for ( let r=0; r<csvModel.rows.length; r+=1 ) {
+			let row = csvModel.rows[r]
 
 			for ( let c=0; c<row.columns.length; c+=1 ) {
+				let columnModel = config.columns.models[c]
+				if ( columnModel.hidden ) {
+					continue
+				}
 				let column = row.columns[c]
 
 				if ( c > 0 ) {
@@ -181,139 +197,132 @@ const recipe = {
 	},
 
 	/**
-	 * Turns a string definition into a specification which in turn will help generate the
-	 * content of the CSV. Tokens are either strings or objects which contain state that can
-	 * be evaluated into strings.
+	 * Turns a string definition into a column model which in turn will help generate the
+	 * content of the CSV. A simple object which contain state that can be evaluated into
+	 * strings.
 	 */
-	getSpecification: ( defn ) => {
-		// A null definition results in a single empty string in the CSV.
-		if ( !defn || defn.length === 0 ) {
-			return {tokens:['']}
+	getColumnModel: ( blueprint ) => {
+		// A null blueprint results in a hidden column
+		if ( !blueprint || blueprint.length === 0 ) {
+			return {hidden:true}
 		}
 
-		// Definitions can come in two halves separated by a | e.g. "template|config"
-		let arr = defn.split('|')
-		let template = arr[0]
-		let spec = {}
-		spec.tokens = []
-
-		// Replace any known variables in the template.
-		for ( let key in recipe.variables ) {
-			template = template.replaceAll( '$'+key, recipe.variables[key] )
+		// Blueprints are multiline - usually of the format: header\ncontent definition\nmeta
+		// where meta is optional
+		let arr = blueprint.split( '\n' )
+		
+		let content = arr[1]
+		let columnModel = {}
+		columnModel.tokens = []
+		
+		// Process the meta first because it can give us reason not to include this column model at all
+		if ( !recipe.processMeta( columnModel, arr[2] ) ) {
+			return {hidden:true}
 		}
 
-		// Search for patterns in the template.
-		let i = 0
-		searchLoop: while ( i < template.length ) {
-			// A % char means a pattern might follow ...
-			if ( template[i] === '%' ) {
-				for ( let key in recipe.variables ) {
-					let index = template.indexOf( '%'+key )
-					// Does it match any of the variables?
-					if ( index === i ) {
-						// Tokenise the search string and the %pattern 
-						spec.tokens.push( template.substr(0,index) )
-						spec.tokens.push( { pattern:key } )
-						
-						// Chop the tokenised bits from the template and resume the search
-						template = template.substring( index+key.length+1 )
-						i = 0
-						continue searchLoop
-					}
-				}
+		if ( content ) {
+			// Replace any known variables in the template.
+			for ( let key in recipe.variables ) {
+				content = content.replaceAll( '$'+key, recipe.variables[key] )
+				arr[0] = arr[0].replaceAll( '$'+key, recipe.variables[key] )
 			}
 
-			// An @ means a function call might follow ...
-			if ( template[i] === '@' ) {
-				for ( let key in funcs ) {
-					let index = template.indexOf( '@'+key+'(' )
-					// Does it match any of the functions, including the ) at the end?
-					if ( index === i ) {
-						let end = template.indexOf( ')', index )
-						if ( end !== -1 ) {
-							// Tokenise the search string.
-							spec.tokens.push( template.substr(0,index) )
-
-							let vars = template.substring( index+key.length+2,end)
-							spec.tokens.push( { 
-								function: key,
-								vars: vars
-							} )
+			// Search for patterns in the template.
+			let i = 0
+			searchLoop: while ( i < content.length ) {
+				// A % char means a pattern might follow ...
+				if ( content[i] === '%' ) {
+					for ( let key in recipe.variables ) {
+						let index = content.indexOf( '%'+key )
+						// Does it match any of the variables?
+						if ( index === i ) {
+							// Tokenise the search string and the %pattern 
+							columnModel.tokens.push( content.substr(0,index) )
+							columnModel.tokens.push( { pattern:key } )
 							
-							// Chop the tokenised bits from the template and resume the search
-							template = template.substring( end+1 )
+							// Chop the tokenised bits from the content and resume the search
+							content = content.substring( index+key.length+1 )
 							i = 0
 							continue searchLoop
 						}
 					}
-				}				
+				}
+
+				// An @ means a function call might follow ...
+				if ( content[i] === '@' ) {
+					for ( let key in funcs ) {
+						let index = content.indexOf( '@'+key+'(' )
+						// Does it match any of the functions, including the ) at the end?
+						if ( index === i ) {
+							let end = content.indexOf( ')', index )
+							if ( end !== -1 ) {
+								// Tokenise the search string.
+								columnModel.tokens.push( content.substr(0,index) )
+
+								let vars = content.substring( index+key.length+2,end)
+								columnModel.tokens.push( { 
+									function: key,
+									vars: vars
+								} )
+								
+								// Chop the tokenised bits from the content and resume the search
+								content = content.substring( end+1 )
+								i = 0
+								continue searchLoop
+							}
+						}
+					}				
+				}
+				i += 1
 			}
-			i += 1
-		}
-		// Include everything that's left in the template (could be everything!)
-		spec.tokens.push( template )
-
-		// Configs are easy to configure
-		if ( arr.length === 2 ) {
-			recipe.processConfig( arr[1], spec )
 		}
 
-		return spec
+		// Include everything that's left in the content (could be everything!) and push everything
+		// back to be processed. arr[0] should be the header string and arr[2] is the optional meta.
+		columnModel.tokens.push( content || ''  )
+		columnModel.header = arr[0]
+		return columnModel
 	},
 
 	/**
-	 * Parses the config part of a defn string and configures the column spec to act accordingly.
+	 * Parses the config part of a defn string and configures the column model to act accordingly.
 	 */
-	processConfig: ( config, spec ) => {
-		// Configs are space-separated directives we parse one-by-one
-		let tokens = config.split(' ')
-		let header = false
+	processMeta: ( columnModel, meta = '' ) => {
+		// Meta strings are space-separated tokens we parse one-by-one
+		let tokens = meta.split(' ')
 
-		// Is there an empty keyword?
 		for ( let t=0; t<tokens.length; t+=1 ) {
+			// 'off' means this column Model should never show
+			if ( tokens[t] === 'off' ) {
+				return false
+			}
+
 			// Empty states a %age that the column can be empty for.
-			if ( !header && tokens[t] === 'empty' && !spec.isAlwaysShown ) {
+			else if ( tokens[t] === 'empty' && !columnModel.isAlwaysShown ) {
 				let pctage = parseInt(tokens[t+1])
-				spec.emptyPercentage = pctage
+				columnModel.emptyPercentage = pctage
 				continue
 			}
 
 			// Always overrides any empty row directive to make the column always show.
-			else if ( !header && tokens[t] === 'always' ) {
-				spec.isAlwaysShown = true
-				spec.emptyPercentage = 0
+			else if ( tokens[t] === 'always' ) {
+				columnModel.isAlwaysShown = true
+				columnModel.emptyPercentage = 0
 				continue
 			}
-
-			// Column headers begin and end with a "
-			else if ( tokens[t].startsWith( '"' ) ) {
-				header = !header
-			} 
-			if ( header ) {
-				if ( !spec.header ) {
-					spec.header = ''
-				}
-				spec.header += ' ' + tokens[t]
-			}
-			if ( header && tokens[t].endsWith( '"' ) ) {
-				header = false
-			}
 		}
 
-		if ( spec.header ) {
-			spec.header = spec.header.replaceAll( '"', '' ).trim()
-		}
+		return true
 	},
 
 	/**
 	 * Parse the variables from the textarea, returing a dictionary of variable vrs value
 	 */
-	parseVariables: () => {
+	parseVariables: ( lines ) => {
 		let dict = {}
 
 		// Take the contents of the variables text area. If there's an equals we can use it.
-		let lines = document.getElementById( 'vars' ).value.split( '\n' )
-		for ( line of lines ) {
+		for ( line of lines.split( '\n' ) ) {
 			if ( line.length > 0 && line.indexOf( '=' ) > 0 ) {
 				let bits = line.split(/=(.*)/)
 				dict[bits[0].trim()] = bits[1].trim()

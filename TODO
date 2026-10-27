@@ -6,14 +6,14 @@ VERSIONING
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
 **** Bugs ***********************
+- two blank lines screws up the recipe
 
 **** Features *************************
-- do something with config.errors in everything
-
-1.0
-
-- 'order by' directive
 - HTML <table> view of the output
+- refer to a date on the same row so that e.g. a start and end date remain logical
+- @next() to cycle through an array from a var
+- do something with config.errors in everything <-- don;t know what this means any more! :D
+- 'order by' directive
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
