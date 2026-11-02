@@ -6,8 +6,8 @@ VERSIONING
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
 **** Bugs ***********************
-- addFromLine appears in help / directives
 - rows N empty M isn't working - rows are not empty
+- hiding the first column still inserts a comma
 
 **** Features *************************
 - cheatsheet

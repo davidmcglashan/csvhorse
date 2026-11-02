@@ -6,6 +6,9 @@ Try CSVhorse online at https://csvhorse.mcglashan.net/
 
 ## Changelog
 
+### version 2.0
+- Overhaul of the way recipes are written
+
 ### version 1.0.0
 - The two wrap settings are now properly persisted and restored from session to session.
 - time(step) now works properly, starting from now and stepping forwards.

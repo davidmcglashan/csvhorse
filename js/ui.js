@@ -227,6 +227,11 @@ const ui = {
 	buildHelp: () => {
 		let elem = document.getElementById( 'help-directives')
 		for (const [key, directive] of Object.entries(directives)) {
+			// Don't write help for the helper functions!
+			if ( typeof directive !== 'object' ) {
+				continue
+			}
+
 			// Command and parameters
 			let p = document.createElement('p')
 			p.classList.add( 'command' )
