@@ -16,12 +16,13 @@ const recipe = {
 		// Create an object describing our default configuration ...
 		recipe.config = {
 			rows: 10,
+			rowsEmptyPercentage: 0,
 			columns: {
 				blueprints: [],
 				models: []
 			},
 			separator: ',',
-			errors: []
+			errors: [],
 		}
 		let error = null
 
@@ -46,9 +47,11 @@ const recipe = {
 		csvModel.rows = []
 		csvModel.header = []
 		for ( let r=0; r<recipe.config.rows; r+=1 ) {
-			let row = {}
+			let row = {
+				columns: [],
+				isEmpty: random.get( 0, 100 ) < recipe.config.rowsEmptyPercentage
+			}
 			csvModel.rows[r] = row
-			row.columns = []
 		}
 
 		// The number of columns shown is the number of blueprints received ...
