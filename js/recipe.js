@@ -4,6 +4,7 @@ const recipe = {
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
 	version: "v2.0.0-latest",
+	config: {},
 
 	/*
 	* Executes the currently entered recipe.
@@ -13,7 +14,7 @@ const recipe = {
 		recipe.clearLog()
 		
 		// Create an object describing our default configuration ...
-		let config = {
+		recipe.config = {
 			rows: 10,
 			columns: {
 				blueprints: [],
@@ -24,62 +25,48 @@ const recipe = {
 		}
 		let error = null
 
-		// A first pass strips all the comments from the recipe file.
-		let inText = ''
-		for ( let line of document.getElementById('rec').value.trim().split('\n') ) {
-			line = line.trim()
-			if ( line.startsWith( '//' ) ) {
-				continue
-			}
-			inText += line + '\n'
-		}
+		// Make good the recipe text that was entered and start to make sense of it.
+		// Variables maintain state across recipe executions and so have to be cleared out
+		// before we re-parse the recipe.
+		let recipeText = recipe.prepareText()
+		variables.init()
 
-		// Get the recipe text, split by double newlines so we can parse each block in turn. 
-		let recipeBlocks = inText.split('\n\n')
-
-		// The first block is always always the directives
-		for ( let line of recipeBlocks[0].split( '\n' ) ) {
-			directives.parse( line, config )
-		}
-
-		// Variables are declared in the next block if it is so annoted ...
-		let i = 1
-		if ( recipeBlocks[i].startsWith( 'variables:\n' ) ) {
-			recipe.parseVariables( recipeBlocks[i] )
-			i += 1
-		}
+		// Parsing the directives and the variables each return the line they finish on,
+		// which will tell us when the column definitions start
+		let start = Math.max( 
+			recipe.parseDirectives( recipeText ),
+			recipe.parseVariables( recipeText )
+		)
 
 		// Everything else is a column
-		for ( ; i<recipeBlocks.length; i+= 1 ) {
-			config.columns.blueprints.push( recipeBlocks[i] )
-		}
+		recipe.parseColumnBlueprintsFrom( recipeText, start )
 
 		// csvModel is a table model for the CSV. We declare all the storage here.
 		let csvModel = {}
 		csvModel.rows = []
 		csvModel.header = []
-		for ( let r=0; r<config.rows; r+=1 ) {
+		for ( let r=0; r<recipe.config.rows; r+=1 ) {
 			let row = {}
 			csvModel.rows[r] = row
 			row.columns = []
 		}
 
 		// The number of columns shown is the number of blueprints received ...
-		let numberOfCols = config.columns.blueprints.length
+		let numberOfCols = recipe.config.columns.blueprints.length
 		
 		// At this point we have the number of rows and columns, and all the blueprints
 		// so we can start generating content into the csvModel.
 		for ( let c=0; c<numberOfCols; c+=1 ) {
-			let blueprint = config.columns.blueprints[c]
-			if ( blueprint === 'stop' ) {
+			let blueprint = recipe.config.columns.blueprints[c]
+			if ( blueprint[0] === 'stop' ) {
 				numberOfCols = c
 				break
 			}
 
 			// Process the blueprint to get a column model. Failure means this column is hidden
 			// so we shouldn't process it any further.
-			let columnModel = recipe.getColumnModel( blueprint )
-			config.columns.models[c] = columnModel
+			let columnModel = recipe.buildColumnModel( blueprint )
+			recipe.config.columns.models[c] = columnModel
 			if ( columnModel.hidden ) {
 				continue
 			}
@@ -91,7 +78,7 @@ const recipe = {
 			}
 
 			// Now use it to generate content for each row!
-			for ( let r=0; r<config.rows; r+=1 ) {
+			for ( let r=0; r<recipe.config.rows; r+=1 ) {
 				let column = {}
 				csvModel.rows[r].columns[c] = column
 
@@ -115,7 +102,7 @@ const recipe = {
 					} else {
 						// Patterns can simply be written
 						if ( token.pattern ) {							
-							column.content += recipe.getStringFromPattern( recipe.variables[token.pattern] )
+							column.content += patterns.getStringFromPattern( variables.get( token.pattern ) )
 						} 
 						
 						// Functions require some execution
@@ -134,26 +121,26 @@ const recipe = {
 		//  1. if the csvModel asks for one and the config doesn't disallow it
 		//  2. the config explicitly allows it
 		if ( 
-			(csvModel.showHeader && !config.showHeader)
-			|| (config.showHeader === 'on')
+			(csvModel.showHeader && !recipe.config.showHeader)
+			|| (recipe.config.showHeader === 'on')
 		) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
-				let columnModel = config.columns.models[c]
+				let columnModel = recipe.config.columns.models[c]
 				if ( columnModel.hidden ) {
 					continue
 				}
 
 				if ( c > 0 ) {
-					str += config.separator
+					str += recipe.config.separator
 				}
 
 				if ( csvModel.header[c] ) {
-					str += recipe.makeSafe( csvModel.header[c], config )
+					str += recipe.makeSafe( csvModel.header[c], recipe.config )
 				} else {
 					if ( config.headerFormat === 'letters' ) {
-						str += recipe.makeSafe( 'Column '+(String.fromCharCode(c+65)), config )
+						str += recipe.makeSafe( 'Column '+(String.fromCharCode(c+65)), recipe.config )
 					} else {
-						str += recipe.makeSafe( 'Column '+(c+1), config )
+						str += recipe.makeSafe( 'Column '+(c+1), recipe.config )
 					}
 				}
 			}
@@ -165,19 +152,19 @@ const recipe = {
 			let row = csvModel.rows[r]
 
 			for ( let c=0; c<row.columns.length; c+=1 ) {
-				let columnModel = config.columns.models[c]
+				let columnModel = recipe.config.columns.models[c]
 				if ( columnModel.hidden ) {
 					continue
 				}
 				let column = row.columns[c]
 
 				if ( c > 0 ) {
-					str += config.separator
+					str += recipe.config.separator
 				}
 
 				// Non-empty rows don't leave empty cells (unless their content is empty)
 				if ( !row.isEmpty || column.isAlwaysShown ) {
-					str += recipe.makeSafe( column.content.trim(), config )
+					str += recipe.makeSafe( column.content.trim(), recipe.config )
 				}
 			}
 			if ( numberOfCols > 0 ) {
@@ -189,98 +176,148 @@ const recipe = {
 		let textarea = document.getElementById('out')
 		textarea.value = str
 
-		for ( let error in config.errors ) {
-			recipe.addToLog( config.errors[error] )
+		for ( let error in recipe.config.errors ) {
+			recipe.addToLog( recipe.config.errors[error] )
 		}
 
 		if ( error ) { throw error }
 	},
 
 	/**
-	 * Turns a string definition into a column model which in turn will help generate the
-	 * content of the CSV. A simple object which contain state that can be evaluated into
-	 * strings.
+	 * Prepare the content of the HTML form element into an array of trimmed text with any comments
+	 * and duplicates removed. Done in this func() so we only have to do it once.
 	 */
-	getColumnModel: ( blueprint ) => {
+	prepareText: () => {
+		let recipeText = document.getElementById('rec').value.trim()
+		let lastWasBlank = false
+		let lines = []
+
+		for ( let line of recipeText.split( '\n' ) ) {
+			// Ignore comments
+			if ( line.indexOf( '//' ) === 0 ) {
+				continue
+			}
+
+			// If this line was blank and the last line was blank then don't include this line
+			if ( line.length === 0 ) {
+				if ( lastWasBlank ) {
+					continue
+				}
+				lastWasBlank = true
+			} else {
+				lastWasBlank = false
+			}
+
+			// All tests passed. Include this line ...
+			lines.push( line )
+		}
+
+		return lines
+	},
+
+	/**
+	 * Parse the directives from the recipe text. These are always everything up to the first
+	 * empty line, not including comments.
+	 */
+	parseDirectives: ( recipeText ) => {
+		let counter = 0
+
+		for ( let line of recipeText ) {
+			counter += 1
+
+			// At the first blank line we stop.
+			if ( line.length === 0 ) {
+				return counter
+			}
+
+			directives.addFromLine( line )
+		}
+
+		return counter
+	},
+
+	/**
+	 * Parse the variables from the recipe text. These are always everything between two blanks lines after
+	 * the directives where the first line is 'variables:'
+	 */
+	parseVariables: ( recipeText ) => {
+		let started = false
+		let counter = 0
+
+		for ( let line of recipeText ) {
+			counter += 1
+
+			// Don't start reading variables until we're told
+			if ( !started ) {
+				started = line === 'variables:'
+				continue
+			}
+
+			variables.addFromLine( line )
+
+			// At the first blank line we stop.
+			if ( line.length === 0 ) {
+				return counter
+			}
+		}
+
+		return 0
+	},
+
+	/**
+	 * Reads the column blueprints from the recipe file.
+	 */
+	parseColumnBlueprintsFrom: ( recipeText, from ) => {
+		let blueprint = []
+		for ( i=from; i<recipeText.length; i+= 1 ) {
+			let line = recipeText[i]
+			
+			// Blank lines end the recipe
+			if ( line.length === 0 ) {
+				recipe.config.columns.blueprints.push( blueprint )
+				blueprint = []
+			} else {
+				blueprint.push( line )
+			}
+		}
+
+		// There'll be a blueprint ready to push when we exit the loop above.
+		recipe.config.columns.blueprints.push( blueprint )
+	},
+
+	/**
+	 * Turns a blueprint into a column model which in turn will help generate the
+	 * content of the CSV: a simple object which contain state that can be evaluated
+	 * into strings.
+	 */
+	buildColumnModel: ( blueprint ) => {
 		// A null blueprint results in a hidden column
 		if ( !blueprint || blueprint.length === 0 ) {
 			return {hidden:true}
 		}
-
-		// Blueprints are multiline - usually of the format: header\ncontent definition\nmeta
-		// where meta is optional
-		let arr = blueprint.split( '\n' )
 		
-		let content = arr[1]
+		// Blueprints are arrays - usually of the format: [header,content definition,meta]
+		// where meta is optional		
 		let columnModel = {}
 		columnModel.tokens = []
 		
 		// Process the meta first because it can give us reason not to include this column model at all
-		if ( !recipe.processMeta( columnModel, arr[2] ) ) {
+		if ( !recipe.processMeta( columnModel, blueprint[2] ) ) {
 			return {hidden:true}
 		}
 
-		if ( content ) {
-			// Replace any known variables in the template.
-			for ( let key in recipe.variables ) {
-				content = content.replaceAll( '$'+key, recipe.variables[key] )
-				arr[0] = arr[0].replaceAll( '$'+key, recipe.variables[key] )
-			}
+		// Headers can have variable subs, but nothing else.
+		columnModel.header = variables.replace( blueprint[0] )
 
-			// Search for patterns in the template.
-			let i = 0
-			searchLoop: while ( i < content.length ) {
-				// A % char means a pattern might follow ...
-				if ( content[i] === '%' ) {
-					for ( let key in recipe.variables ) {
-						let index = content.indexOf( '%'+key )
-						// Does it match any of the variables?
-						if ( index === i ) {
-							// Tokenise the search string and the %pattern 
-							columnModel.tokens.push( content.substr(0,index) )
-							columnModel.tokens.push( { pattern:key } )
-							
-							// Chop the tokenised bits from the content and resume the search
-							content = content.substring( index+key.length+1 )
-							i = 0
-							continue searchLoop
-						}
-					}
-				}
-
-				// An @ means a function call might follow ...
-				if ( content[i] === '@' ) {
-					for ( let key in funcs ) {
-						let index = content.indexOf( '@'+key+'(' )
-						// Does it match any of the functions, including the ) at the end?
-						if ( index === i ) {
-							let end = content.indexOf( ')', index )
-							if ( end !== -1 ) {
-								// Tokenise the search string.
-								columnModel.tokens.push( content.substr(0,index) )
-
-								let vars = content.substring( index+key.length+2,end)
-								columnModel.tokens.push( { 
-									function: key,
-									vars: vars
-								} )
-								
-								// Chop the tokenised bits from the content and resume the search
-								content = content.substring( end+1 )
-								i = 0
-								continue searchLoop
-							}
-						}
-					}				
-				}
-				i += 1
-			}
+		// Some blueprints don't have a content definition so we need to check
+		// for it. This section turns the content string into an array of tokens
+		if ( blueprint[1] ) {
+			blueprint[1] = variables.replace( blueprint[1] )
+			columnModel.tokens = recipe.tokenise( blueprint[1] )
 		}
 
 		// Include everything that's left in the content (could be everything!) and push everything
-		// back to be processed. arr[0] should be the header string and arr[2] is the optional meta.
-		columnModel.tokens.push( content || ''  )
-		columnModel.header = arr[0]
+		// back to be processed. blueprint[0] should be the header string and blueprint[2] is the optional meta.
 		return columnModel
 	},
 
@@ -316,69 +353,65 @@ const recipe = {
 	},
 
 	/**
-	 * Parse the variables from the textarea, returing a dictionary of variable vrs value
+	 * Turns the content string into an array of tokens: some are strings and
+	 * some represent patterns.
 	 */
-	parseVariables: ( lines ) => {
-		let dict = {}
+	tokenise: ( str ) => {
+		tokens = []
 
-		// Take the contents of the variables text area. If there's an equals we can use it.
-		for ( line of lines.split( '\n' ) ) {
-			if ( line.length > 0 && line.indexOf( '=' ) > 0 ) {
-				let bits = line.split(/=(.*)/)
-				dict[bits[0].trim()] = bits[1].trim()
+		// Search for patterns in the template.
+		let i = 0
+			
+		searchLoop: 
+		while ( i < str.length ) {
+			// A % char means a pattern might follow. Does it match any of the variables ...
+			if ( str[i] === '%' ) {
+				for ( let key of variables.keys() ) {
+					let index = str.indexOf( '%'+key )
+					if ( index === i ) {
+						// Tokenise the search string and the %pattern 
+						tokens.push( str.substr(0,index) )
+						tokens.push( { pattern:key } )
+						
+						// Chop the tokenised bits from the content and resume the search
+						str = str.substring( index+key.length+1 )
+						i = 0
+						continue searchLoop
+					}
+				}
 			}
+
+			// An @ means a function call might follow ...
+			if ( str[i] === '@' ) {
+				for ( let key in funcs ) {
+					let index = str.indexOf( '@'+key+'(' )
+					// Does it match any of the functions, including the ) at the end?
+					if ( index === i ) {
+						let end = str.indexOf( ')', index )
+						if ( end !== -1 ) {
+							// Tokenise the search string.
+							tokens.push( str.substr(0,index) )
+
+							let vars = str.substring( index+key.length+2,end)
+							tokens.push( { 
+								function: key,
+								vars: vars
+							} )
+							
+							// Chop the tokenised bits from the content and resume the search
+							str = str.substring( end+1 )
+							i = 0
+							continue searchLoop
+						}
+					}
+				}				
+			}
+			i += 1
 		}
 
-		recipe.variables = dict
-	},
-
-	/**
-	 * Turns the passed-in pattern into a string following the stringhorse rules.
-	 */
-	getStringFromPattern: ( pattern ) => {
-		let str = ''
-		let on = false;
-
-		for ( let i=0; i < pattern.length; i++ ) {
-			let chr = pattern[i]
-			
-			// 'on' is when we are converting chr into something else.
-			if ( on ) {
-				if ( chr === '}' ) {
-					on = false
-					continue
-				}
-
-				switch( chr ) {
-					case '1':
-						str += random.get( 0, 9 )
-						break
-					case 'A':
-						str += String.fromCharCode( random.get( 65,90 ) )
-						break
-					case '*':
-						str += random.get(0,1) === 0 ? random.get(0,9) : String.fromCharCode( random.get( 65,90 ) )
-						break
-					default:
-						str += chr
-						break
-				}
-			} 
-			
-			// 'off' is when we are simply copying chr into the out buffer.
-			else {
-				// { and } switch between on and off modes.
-				if ( chr === '{' ) {
-					on = true
-					continue
-				}
-				
-				str += chr
-			}
-		}
-
-
-		return str
+		// Push any left over bits of str and return the array.
+		tokens.push( str || ''  )
+		return tokens
 	},
 
 	/**
