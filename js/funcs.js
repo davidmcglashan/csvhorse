@@ -411,6 +411,38 @@ const funcs = {
 		}
 	},
 	
+	cycle: {
+		params: "[list]",
+		short: "Cycles through entries from the comma-separated list",
+		long: [
+			'@cycle(a,b,c) inserts a on one row, b on the next, then c, back to a, etc.'
+		],
+		func: ( func ) => {
+			// Set up the function first.
+			if ( !func.current ) {
+				// These are the default values. We'll use these if something goes wrong.
+				func.current = 0
+
+				// Use an empty list if we can't find the specified list.
+				func.entries = ['']
+				
+				if ( func.vars ) {
+					let list = func.vars.trim()
+					if ( list ) {
+						func.entries = list.split( ',' )
+					}
+				}
+			}
+			
+			let ret = func.entries[ func.current ]
+			func.current += 1
+			if ( func.current === func.entries.length ) {
+				func.current = 0
+			}
+			return ret
+		}
+	},
+
 	/**
 	 * Generates a random UUID for inclusion in the CSV. Takes no parameters, maintains no state!
 	 */
