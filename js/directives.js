@@ -37,12 +37,12 @@ const directives = {
 		func: ( tokens ) => {		
 			for ( let token of tokens ) {
 				if ( token === 'off' ) {
-					recipe.config.showHeader = 'off'
+					recipe.config.headerFormat = 'off'
 				} else if ( token === 'on' ) {
-					recipe.config.showHeader = 'on'
-				} else if ( token === 'numbers' ) {
+					recipe.config.headerFormat = 'on'
+				} else if ( token.startsWith( 'number' ) ) {
 					recipe.config.headerFormat = 'numbers'
-				} else if ( token === 'letters' ) {
+				} else if ( token.startsWith( 'letter' ) ) {
 					recipe.config.headerFormat = 'letters'
 				}
 			}

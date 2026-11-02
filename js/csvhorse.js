@@ -25,9 +25,11 @@ const csvhorse = {
 		const config = recipe.config
 
 		// csvModel is a table model for the CSV. 
-		let csvModel = {}
-		csvModel.rows = []
-		csvModel.header = []
+		let csvModel = {
+			rows: [],
+			header: [],
+			headerFormat: 'on'
+		}
 		for ( let r=0; r<config.rows; r+=1 ) {
 			csvModel.rows[r] = {
 				columns: [],
@@ -43,7 +45,6 @@ const csvhorse = {
 			// Does the columnModel contain any header information?
 			if ( columnModel.header ) {
 				csvModel.header[c] = columnModel.header
-				csvModel.showHeader = true
 			}
 
 			// Now use it to generate content for each row!
@@ -89,10 +90,7 @@ const csvhorse = {
 		// Show the header if the various configurations specifies one ...
 		//  1. if the csvModel asks for one and the config doesn't disallow it
 		//  2. the config explicitly allows it
-		if ( 
-			(csvModel.showHeader && !config.showHeader)
-			|| (config.showHeader === 'on')
-		) {
+		if ( csvModel.headerFormat ) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
 				let columnModel = config.columns[c]
 				if ( columnModel.hidden ) {
@@ -103,14 +101,16 @@ const csvhorse = {
 					str += config.separator
 				}
 
-				if ( csvModel.header[c] ) {
-					str += csvhorse.makeSafe( csvModel.header[c], config )
-				} else {
-					if ( config.headerFormat === 'letters' ) {
+				switch ( config.headerFormat ) {
+					case 'on':
+						str += csvhorse.makeSafe( csvModel.header[c], csvModel.header[c] )
+						break
+					case 'letters':
 						str += csvhorse.makeSafe( 'Column '+(String.fromCharCode(c+65)), config )
-					} else {
+						break
+					case 'numbers':
 						str += csvhorse.makeSafe( 'Column '+(c+1), config )
-					}
+						break
 				}
 			}
 			str += '\n'

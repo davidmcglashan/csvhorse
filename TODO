@@ -8,17 +8,16 @@ VERSIONING
 **** Bugs ***********************
 
 **** Features *************************
-- cheatsheet
-- auto headers numbers or letters - currently suppresed by structure
-- put variables in the recipe config structure?
+- @next() to cycle through an array from a var
+- @count(random 10) starts counting from a random number between 1 and 10
+- inline patterns that don't use vars
 - upper lower initcap
+- better example
 - HTML <table> view of the output
 - refer to a date on the same row so that e.g. a start and end date remain logical
-- @next() to cycle through an array from a var
-- better example
 - do something with config.errors in everything <-- don;t know what this means any more! :D
 - 'order by' directive
-- @count(random 10) starts counting from a random number between 1 and 10
+- cheatsheet
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage
