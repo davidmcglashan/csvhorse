@@ -6,10 +6,8 @@ VERSIONING
  - Point releases for bug fixes, UI modifications, meta and build changes.
 
 **** Bugs ***********************
-- hiding the first column still inserts a comma
 
 **** Features *************************
-- empty cells and rows don't increment counts - i.e. only count if processed, only process if visible
 - cheatsheet
 - auto headers numbers or letters - currently suppresed by structure
 - put variables in the recipe config structure?

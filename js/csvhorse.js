@@ -4,7 +4,6 @@ const csvhorse = {
 	// - Minor changes when at least one command is added, removed or changed, or a UI feature is added.
 	// - Point releases for bug fixes, UI modifications, meta and build changes.
 	version: "v2.0.0-latest",
-	config: {},
 
 	/**
 	 * Run CSV Horse. This is done in two stages ...
@@ -23,36 +22,23 @@ const csvhorse = {
 	 * Produce the CSV output by executing the recipe and write it to the UI.
 	 */
 	produceOutput: () => {
-		// csvModel is a table model for the CSV. We declare all the storage here.
+		const config = recipe.config
+
+		// csvModel is a table model for the CSV. 
 		let csvModel = {}
 		csvModel.rows = []
 		csvModel.header = []
-		for ( let r=0; r<recipe.config.rows; r+=1 ) {
+		for ( let r=0; r<config.rows; r+=1 ) {
 			csvModel.rows[r] = {
 				columns: [],
-				isEmpty: random.get( 0, 100 ) < recipe.config.rowsEmptyPercentage
+				isEmpty: random.get( 0, 100 ) < config.rowsEmptyPercentage
 			}
 		}
 
-		// The number of columns shown is the number of blueprints received ...
-		let numberOfCols = recipe.config.columns.blueprints.length
-		
-		// At this point we have the number of rows and columns, and all the blueprints
-		// so we can start generating content into the csvModel.
+		// The number of columns shown is the number of models received ...
+		let numberOfCols = config.columns.length
 		for ( let c=0; c<numberOfCols; c+=1 ) {
-			let blueprint = recipe.config.columns.blueprints[c]
-			if ( blueprint[0] === 'stop' ) {
-				numberOfCols = c
-				break
-			}
-
-			// Process the blueprint to get a column model. Failure means this column is hidden
-			// so we shouldn't process it any further.
-			let columnModel = recipe.buildColumnModel( blueprint )
-			recipe.config.columns.models[c] = columnModel
-			if ( columnModel.hidden ) {
-				continue
-			}
+			let columnModel = config.columns[c]
 
 			// Does the columnModel contain any header information?
 			if ( columnModel.header ) {
@@ -61,7 +47,7 @@ const csvhorse = {
 			}
 
 			// Now use it to generate content for each row!
-			for ( let r=0; r<recipe.config.rows; r+=1 ) {
+			for ( let r=0; r<config.rows; r+=1 ) {
 				let column = {}
 				csvModel.rows[r].columns[c] = column
 
@@ -97,33 +83,33 @@ const csvhorse = {
 			}
 		}
 
-		// Now turn the CSV model into a CSV string
+		// Now turn the table model into a CSV string
 		let str = ''
 
 		// Show the header if the various configurations specifies one ...
 		//  1. if the csvModel asks for one and the config doesn't disallow it
 		//  2. the config explicitly allows it
 		if ( 
-			(csvModel.showHeader && !recipe.config.showHeader)
-			|| (recipe.config.showHeader === 'on')
+			(csvModel.showHeader && !config.showHeader)
+			|| (config.showHeader === 'on')
 		) {
 			for ( let c=0; c<numberOfCols; c+=1 ) {
-				let columnModel = recipe.config.columns.models[c]
+				let columnModel = config.columns[c]
 				if ( columnModel.hidden ) {
 					continue
 				}
 
 				if ( c > 0 ) {
-					str += recipe.config.separator
+					str += config.separator
 				}
 
 				if ( csvModel.header[c] ) {
-					str += csvhorse.makeSafe( csvModel.header[c], recipe.config )
+					str += csvhorse.makeSafe( csvModel.header[c], config )
 				} else {
 					if ( config.headerFormat === 'letters' ) {
-						str += csvhorse.makeSafe( 'Column '+(String.fromCharCode(c+65)), recipe.config )
+						str += csvhorse.makeSafe( 'Column '+(String.fromCharCode(c+65)), config )
 					} else {
-						str += csvhorse.makeSafe( 'Column '+(c+1), recipe.config )
+						str += csvhorse.makeSafe( 'Column '+(c+1), config )
 					}
 				}
 			}
@@ -135,19 +121,19 @@ const csvhorse = {
 			let row = csvModel.rows[r]
 
 			for ( let c=0; c<row.columns.length; c+=1 ) {
-				let columnModel = recipe.config.columns.models[c]
+				let columnModel = config.columns[c]
 				if ( columnModel.hidden ) {
 					continue
 				}
 				let column = row.columns[c]
 
 				if ( c > 0 ) {
-					str += recipe.config.separator
+					str += config.separator
 				}
 
 				// Non-empty rows don't leave empty cells (unless their content is empty)
 				if ( !row.isEmpty || column.isAlwaysShown ) {
-					str += csvhorse.makeSafe( column.content.trim(), recipe.config )
+					str += csvhorse.makeSafe( column.content.trim(), config )
 				}
 			}
 			if ( numberOfCols > 0 ) {
@@ -159,8 +145,8 @@ const csvhorse = {
 		let textarea = document.getElementById('out')
 		textarea.value = str
 
-		for ( let error in recipe.config.errors ) {
-			csvhorse.addToLog( recipe.config.errors[error] )
+		for ( let error in config.errors ) {
+			csvhorse.addToLog( config.errors[error] )
 		}
 	},
 

@@ -7,10 +7,7 @@ const recipe = {
 		recipe.config = {
 			rows: 10,
 			rowsEmptyPercentage: 0,
-			columns: {
-				blueprints: [],
-				models: []
-			},
+			columns: [],
 			separator: ',',
 			errors: [],
 		}
@@ -117,13 +114,19 @@ const recipe = {
 	 * Reads the column blueprints from the recipe file.
 	 */
 	parseColumnBlueprintsFrom: ( recipeText, from ) => {
+		let arr = []
 		let blueprint = []
 		for ( i=from; i<recipeText.length; i+= 1 ) {
 			let line = recipeText[i]
-			
+
+			// A stop directive will prevent any further columns being added
+			if ( line === 'stop' ) {
+				break
+			}
+
 			// Blank lines end the recipe
 			if ( line.length === 0 ) {
-				recipe.config.columns.blueprints.push( blueprint )
+				arr.push( blueprint )
 				blueprint = []
 			} else {
 				blueprint.push( line )
@@ -131,7 +134,18 @@ const recipe = {
 		}
 
 		// There'll be a blueprint ready to push when we exit the loop above.
-		recipe.config.columns.blueprints.push( blueprint )
+		arr.push( blueprint )
+		
+		// Blueprints are just text so now we build models out of them
+		for ( blueprint of arr ) {
+			// Process the blueprint to get a column model. If the column is hidden
+			// we discard it.
+			let columnModel = recipe.buildColumnModel( blueprint )
+			if ( columnModel.hidden ) {
+				continue
+			}
+			recipe.config.columns.push( columnModel )
+		}
 	},
 
 	/**
