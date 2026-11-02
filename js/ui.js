@@ -12,7 +12,7 @@ const ui = {
 		document.getElementById( 'output' ).style.left = 'calc(' + ui.ratio + 'vw + 7px)'
 		document.getElementById( 'gripper' ).style.left = 'calc(' + ui.ratio + 'vw)'
 		
-		recipe.execute()
+		csvhorse.run()
 	},
 
 	/**
@@ -116,7 +116,7 @@ const ui = {
 		'// Comments and blank lines are ignored. Try changing the recipe ... !\n'
 
 		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
-		recipe.execute()
+		csvhorse.run()
 	},
 
 	/**
@@ -214,7 +214,7 @@ const ui = {
 		// Put the version string into any elements with a version class.
 		let versions = document.getElementsByClassName( 'version' )
 		for ( let version of versions ) {
-			version.innerHTML = recipe.version
+			version.innerHTML = csvhorse.version
 		}
 
 		// Put the current year into any elements with a year class (copyright notices and stuff)
@@ -315,7 +315,7 @@ const ui = {
 	 */
 	cmdEnter: ( ev ) => {
 		if ( ev.metaKey && ev.keyCode === 13 ) {
-			recipe.execute()
+			csvhorse.run()
 		}
 	}
 }
