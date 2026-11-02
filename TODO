@@ -8,8 +8,6 @@ VERSIONING
 **** Bugs ***********************
 
 **** Features *************************
-- @cycle() to cycle through an array from a var
-- @count(random 10) starts counting from a random number between 1 and 10
 - inline patterns that don't use vars
 - upper lower initcap
 - better example

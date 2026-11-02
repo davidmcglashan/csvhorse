@@ -3,12 +3,13 @@ const funcs = {
 	 * Count function
 	 */
 	count: {
-		params: "(start) ('step' [number]) ('skip' [number)",
+		params: "(random) (start) ('step' [number]) ('skip' [number)",
 		short: "A counter with controllable start, steps, and skips.",
 		long: [
 			'@count() starts from 1 and increments by 1',
 			'@count(23) starts from 23 and increments by 1',
 			'@count(5 step 5) starts from 5 and increments by 5',
+			'@count(random 23) starts from a random number between 1 and 23',
 			'@count(step 10) starts from 1 and increments by 10',
 			'@count(skip 50) starts from 1 and increments by 1 with a 50% probability of a value being skipped.'
 		],
@@ -29,6 +30,18 @@ const funcs = {
 					if ( !isNaN( start ) ) {
 						func.current = start
 						i += 1
+					} 
+					
+					// Check for random before the starting number
+					else if ( vars[i] === 'random' ) {
+						if ( vars[i+1] ) {
+							let next = parseInt( vars[i+1] )
+							if ( isNaN( next ) ) {
+								next = 10
+							}	
+							func.current = random.get( 1, next )
+							i += 2
+						}
 					}
 
 					while ( i < vars.length ) {
