@@ -229,18 +229,19 @@ const recipe = {
 		while ( i < str.length ) {
 			// A % char means a pattern might follow. Does it match any of the variables ...
 			if ( str[i] === '%' ) {
-				for ( let key of variables.keys() ) {
-					let index = str.indexOf( '%'+key )
-					if ( index === i ) {
-						// Tokenise the search string and the %pattern 
-						tokens.push( str.substr(0,index) )
-						tokens.push( { pattern:key } )
-						
-						// Chop the tokenised bits from the content and resume the search
-						str = str.substring( index+key.length+1 )
-						i = 0
-						continue searchLoop
-					}
+				// Find the start and end {} for the pattern string. First must be the
+				// next char and last must come after first.
+				let first = str.indexOf( '{', i )
+				let last = str.indexOf( '}', i )
+				if ( first === i+1 && last > first ) {
+					// Tokenise the search string and the %pattern 
+					tokens.push( str.substr(0,i) )
+					tokens.push( { pattern:`${ str.substr(first+1,last-first-1)}` } )
+
+					// Chop the tokenised bits from the content and resume the search
+					str = str.substring( last+1 )
+					i = 0
+					continue searchLoop
 				}
 			}
 

@@ -2,19 +2,12 @@ const patterns = {
 	/**
 	 * Turns the passed-in pattern into a string following the stringhorse rules.
 	 */
-	getStringFromPattern: ( pattern ) => {
+	convertString: ( pattern ) => {
 		let str = ''
-		let on = false;
 
 		for ( let i=0; i < pattern.length; i++ ) {
 			let chr = pattern[i]
 			
-			// 'on' is when we are converting chr into something else.
-			if ( on ) {
-				if ( chr === '}' ) {
-					on = false
-					continue
-				}
 
 				switch( chr ) {
 					case '1':
@@ -30,18 +23,6 @@ const patterns = {
 						str += chr
 						break
 				}
-			} 
-			
-			// 'off' is when we are simply copying chr into the out buffer.
-			else {
-				// { and } switch between on and off modes.
-				if ( chr === '{' ) {
-					on = true
-					continue
-				}
-				
-				str += chr
-			}
 		}
 
 

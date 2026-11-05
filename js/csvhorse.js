@@ -72,7 +72,7 @@ const csvhorse = {
 					} else {
 						// Patterns can simply be written
 						if ( token.pattern ) {							
-							column.content += patterns.getStringFromPattern( variables.get( token.pattern ) )
+							column.content += patterns.convertString( token.pattern )
 						} 
 						
 						// Functions require some execution

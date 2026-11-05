@@ -8,7 +8,6 @@ VERSIONING
 **** Bugs ***********************
 
 **** Features *************************
-- inline patterns that don't use vars
 - upper lower initcap
 - better example
 - HTML <table> view of the output
