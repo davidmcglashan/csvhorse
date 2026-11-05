@@ -133,7 +133,7 @@ const csvhorse = {
 
 				// Non-empty rows don't leave empty cells (unless their content is empty)
 				if ( !row.isEmpty || column.isAlwaysShown ) {
-					str += csvhorse.makeSafe( column.content.trim(), config )
+					str += csvhorse.getCellContent( column, columnModel, config )
 				}
 			}
 			if ( numberOfCols > 0 ) {
@@ -148,6 +148,24 @@ const csvhorse = {
 		for ( let error in config.errors ) {
 			csvhorse.addToLog( config.errors[error] )
 		}
+	},
+
+	/**
+	 * 
+	 */
+	getCellContent: ( column, model, config ) => {
+		let str = csvhorse.makeSafe( column.content.trim(), config )
+
+		switch ( model.caseModifier ) {
+			case 1:
+				str = str.toUpperCase()
+				break
+			case 2:
+				str = str.toLowerCase()
+				break
+		}
+
+		return str
 	},
 
 	/**

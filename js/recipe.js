@@ -210,6 +210,17 @@ const recipe = {
 				columnModel.emptyPercentage = 0
 				continue
 			}
+
+			// Always overrides any empty row directive to make the column always show.
+			else if ( tokens[t] === 'upper' ) {
+				columnModel.caseModifier = 1
+				continue
+			}		
+			// Always overrides any empty row directive to make the column always show.
+			else if ( tokens[t] === 'lower' ) {
+				columnModel.caseModifier = 2
+				continue
+			}		
 		}
 
 		return true
