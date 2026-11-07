@@ -169,13 +169,10 @@ const csvhorse = {
 		if ( ui.isCsv ) {
 			let textarea = document.getElementById('textarea-output')
 			textarea.value = str
-			console.log( 'csv' )
 		} else {
 			let table = document.getElementById('table-output')
 			table.innerHTML = str
-			console.log( 'table' )
 		}
-		console.log( str )
 
 		for ( let error in config.errors ) {
 			csvhorse.addToLog( config.errors[error] )
