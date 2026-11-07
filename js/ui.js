@@ -134,7 +134,7 @@ const ui = {
 	restoreState: () => {
 		let recipeText = document.getElementById('rec')
 		recipeText.value = localStorage['csvhorse.recipe'] !== undefined ? localStorage['csvhorse.recipe'] : ''
-		recipeText.addEventListener( 'keydown', ui.cmdEnter )
+		document.addEventListener( 'keydown', ui.cmdEnter )
 
 		// Re-establish the left and right for each pane
 		if ( localStorage['csvhorse.ui_ratio'] ) {
