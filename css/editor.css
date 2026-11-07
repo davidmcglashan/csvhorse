@@ -97,7 +97,8 @@ section#ui {
 	}
 
 	/* Textareas (very important to stringhorse!) fill their containers, have no borders, and gentle padding. */
-	section#ui textarea {
+	section#ui textarea,
+	section#ui #table-scroller {
 		position: absolute;
 		top: 2.5em;
 		bottom: 0;
@@ -113,6 +114,36 @@ section#ui {
 		section#ui textarea.wrap {
 			text-wrap: nowrap;
 		}
+
+	section#ui #table-scroller {
+		overflow-y: scroll;
+		padding: 0;
+	}
+	
+	section#ui table {
+		padding: 0;
+		border-spacing: 0;
+		width: stretch;
+	}
+
+	section#ui table th {
+		text-align: left;
+		background-color: var(--header-bg);
+		padding: 0.3rem 0rem 0.2rem 1rem;
+		text-wrap: nowrap;
+		font-weight: 500;
+	}
+
+	section#ui table td {
+		text-align: left;
+		padding: 0.3rem 0rem 0.2rem 1rem;
+		border-bottom: 1px solid var(--header-bg);
+		font-weight: 300;
+	}
+
+	section#ui table td:nth-child(odd) {
+  		background:var(--ui-background);
+	}
 
 	section#ui div#output ul#log {
 		position: absolute;

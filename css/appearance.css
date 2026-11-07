@@ -193,7 +193,7 @@ pre {
 	font-size: inherit;
 	font-family: "Sono", sans-serif;
 	font-optical-sizing: auto;
-	font-weight: 400;
+	font-weight: 300;
 	font-style: normal;
 }
 
@@ -202,22 +202,18 @@ span.mono {
 	border: 1px solid var(--example-border);
 }
 
-/* Used only by the info command. */
-.scrollpane {
-	overflow: auto;
-	position: absolute;
-	top: 2em;
-	bottom: 0em;
-	left: 0.5em;
-	right: 0em;
-}
-
 /* Toolbars generally hold buttons and go top-right of their containers. */
 div.toolbar {
 	position: absolute;
 	right: 0em;
 	top: 1em;	
 	color: var(--button-alt-fg);
+}
+
+table {
+	font-family: "Sono", sans-serif;
+	font-size: 10pt;
+	line-height: 11pt;
 }
 
 /* Tabs sit on a grey rule. */

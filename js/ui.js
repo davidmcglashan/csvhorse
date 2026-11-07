@@ -1,4 +1,7 @@
 const ui = {
+	// Quick reference for whether we're showing CSV or a <table> output
+	isCsv: false,
+
 	/**
 	 * Clears all textareas
 	 */
@@ -88,32 +91,38 @@ const ui = {
 	 */
 	example: () => {
 		document.getElementById('rec').value = 'rows 10\n' +
-		'header on\n' +
-		'//seed 1\n' +
-		'//separator ;\n' +
-		'\n' +
-		'variables:\n' +
-		'foo=foo,bar,pip\n' +
-		'\n' +
-		'// This header is ignored\n' +
-		'A number\n' +
-		'@count(step 2)\n' +
-		'\n' +
-		'A hidden number\n' +
-		'@count(step 2)\n' +
-		'off' +
-		'\n' +
-		'// 5 random words of lorem ipsum\n' +
-		'@lorem(5 random)\n' +
-		'\n' +
-		'// Date and time\n' +
-		'@date()\n' +
-		'@time()\n' +
-		'\n' +
-		'// This seventh column doesn\'t show because only six columns were requested at the top.\n' +
-		'HIDDEN\n' +
-		'\n' +
-		'// Comments and blank lines are ignored. Try changing the recipe ... !\n'
+			'header on\n' +
+			'//seed 1\n' +
+			'//separator ;\n' +
+			'\n' +
+			'variables:\n' +
+			'foo=foo,bar,pip\n' +
+			'\n' +
+			'// This comment is ignored\n' +
+			'A number\n' +
+			'@count(step 2)\n' +
+			'\n' +
+			'A hidden number with an "off" directive\n' +
+			'@count(step 2)\n' +
+			'off\n' +
+			'\n' +
+			'Lorem Ipsum\n' +
+			'@lorem(5 random spread)\n' +
+			'\n' +
+			'// Date and time\n' +
+			'When\n' +
+			'@date(-2) @time()\n' +
+			'\n' +
+			'Pattern\n' +
+			'%{AAA-1111}\n' +
+			'\n' +
+			'Random\n' +
+			'@oneof($foo)\n' +
+			'\n' +
+			'stop\n' +
+			'\n' +
+			'// This column doesn\'t show because there\'s a stop directive above it\n' +
+			'HIDDEN'
 
 		localStorage['csvhorse.recipe'] = document.getElementById('rec').value
 		csvhorse.run()
@@ -143,8 +152,8 @@ const ui = {
 			document.getElementById( 'rec' ).classList.add( 'wrap' )
 		}
 		if ( localStorage['csvhorse.wrap-out'] === 'false' ) {
-			document.getElementById( 'out-wrap-button' ).classList.add( 'wrap' )
-			document.getElementById( 'out' ).classList.add( 'wrap' )
+			document.getElementById( 'textarea-output-wrap-button' ).classList.add( 'wrap' )
+			document.getElementById( 'textarea-output' ).classList.add( 'wrap' )
 		}
 
 		// Are we doing dark mode?
@@ -317,5 +326,26 @@ const ui = {
 		if ( ev.metaKey && ev.keyCode === 13 ) {
 			csvhorse.run()
 		}
+	},
+
+	/**
+	 * Switches the UI between text and table mode
+	 */
+	switch: () => {
+		// Mode is determined by the text on display in the button
+		let btn = document.getElementById( 'switch-output-button' )
+		ui.isCsv = btn.innerHTML !== 'CSV'
+
+		// Swap the UI over between the modes.
+		document.getElementById( 'textarea-output' ).classList.toggle( 'hidden' )
+		document.getElementById( 'table-scroller' ).classList.toggle( 'hidden' )
+		if ( ui.isCsv ) {
+			btn.innerHTML = 'CSV'
+		} else {
+			btn.innerHTML = 'Table'
+		}
+
+		// Execute the recipe to refresh the output window.
+		csvhorse.run()
 	}
 }

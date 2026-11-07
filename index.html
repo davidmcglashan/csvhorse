@@ -41,10 +41,10 @@
 				</div>
 				<div class="gripper" id="gripper" onmousedown="ui.dragStart(event);"><span>&vellip;</span></div>
 				<div class="pane" id="output">
-					<strong id="label-output">Output CSV</strong>
-					<a title="Toggle text wrapping in the Output pane"id="out-wrap-button" href="javascript:" onclick="ui.wrap('out')" class="button">Wrap</a>
-					<textarea id="out" class="mono" aria-labelledby="label-output" placeholder="The generated CSV will appear here"></textarea>
-					<div class="scrollpane hidden" id="info"></div>
+					<strong id="label-output">Output <a id="switch-output-button" class="button" title="Switch output" href="javascript:" onclick="ui.switch()">Table</a></strong>
+					<a title="Toggle text wrapping in the Output pane"id="textarea-output-wrap-button" href="javascript:" onclick="ui.wrap('textarea-output')" class="button">Wrap</a>
+					<textarea id="textarea-output" class="mono hidden" aria-labelledby="label-output" placeholder="The generated CSV will appear here"></textarea>
+					<div id="table-scroller"><table id="table-output"></table></div>
 					<ul id="log"></ul>
 				</div>
 			</section>

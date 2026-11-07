@@ -8,13 +8,11 @@ VERSIONING
 **** Bugs ***********************
 
 **** Features *************************
-- upper lower initcap
-- better example
-- HTML <table> view of the output
+- Cmd+Enter should be a shortcut on the doc or window so it always works
 - refer to a date on the same row so that e.g. a start and end date remain logical
 - do something with config.errors in everything <-- don;t know what this means any more! :D
 - 'order by' directive
-- cheatsheet
+- cheatsheet or little hint area that shows all the available options for the line you're on/char you've typed e.g. @lorem
 
 **** IDEAS *************************************************************
 - saved recipes - it's just a JSON file into localstorage

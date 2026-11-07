@@ -86,11 +86,15 @@ const csvhorse = {
 
 		// Now turn the table model into a CSV string
 		let str = ''
-
+		
 		// Show the header if the various configurations specifies one ...
 		//  1. if the csvModel asks for one and the config doesn't disallow it
 		//  2. the config explicitly allows it
 		if ( csvModel.headerFormat ) {
+			if ( !ui.isCsv ) {
+				str = '<tr><th>'
+			}
+
 			for ( let c=0; c<numberOfCols; c+=1 ) {
 				let columnModel = config.columns[c]
 				if ( columnModel.hidden ) {
@@ -98,7 +102,11 @@ const csvhorse = {
 				}
 
 				if ( c > 0 ) {
-					str += config.separator
+					if ( ui.isCsv ) {
+						str += config.separator
+					} else {
+						str += '</th><th>'
+					}
 				}
 
 				switch ( config.headerFormat ) {
@@ -113,12 +121,20 @@ const csvhorse = {
 						break
 				}
 			}
-			str += '\n'
+			if ( ui.isCsv ) {
+				str += '\n'
+			} else {
+				str += '</th></tr>'
+			}
 		}
 
 		// Now the table body
 		for ( let r=0; r<csvModel.rows.length; r+=1 ) {
 			let row = csvModel.rows[r]
+
+			if ( !ui.isCsv ) {
+				str += '\n<tr><td>'
+			}
 
 			for ( let c=0; c<row.columns.length; c+=1 ) {
 				let columnModel = config.columns[c]
@@ -128,7 +144,11 @@ const csvhorse = {
 				let column = row.columns[c]
 
 				if ( c > 0 ) {
-					str += config.separator
+					if ( ui.isCsv ) {
+						str += config.separator
+					} else {
+						str += '</td><td>'
+					}
 				}
 
 				// Non-empty rows don't leave empty cells (unless their content is empty)
@@ -137,13 +157,25 @@ const csvhorse = {
 				}
 			}
 			if ( numberOfCols > 0 ) {
-				str += '\n'
+				if ( ui.isCsv ) {
+					str += '\n'
+				} else {
+					str += '</td></tr>'
+				}
 			}
 		}
 
 		// Finished looping. Better print the results ...
-		let textarea = document.getElementById('out')
-		textarea.value = str
+		if ( ui.isCsv ) {
+			let textarea = document.getElementById('textarea-output')
+			textarea.value = str
+			console.log( 'csv' )
+		} else {
+			let table = document.getElementById('table-output')
+			table.innerHTML = str
+			console.log( 'table' )
+		}
+		console.log( str )
 
 		for ( let error in config.errors ) {
 			csvhorse.addToLog( config.errors[error] )
