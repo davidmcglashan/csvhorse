@@ -149,7 +149,7 @@ const ui = {
 		// And are those panes wrapping their text?
 		if ( localStorage['csvhorse.wrap-rec'] === 'false' ) {
 			document.getElementById( 'rec-wrap-button' ).classList.add( 'wrap' )
-			document.getElementById( 'rec' ).classList.add( 'wrap' )
+			recipeText.classList.add( 'wrap' )
 		}
 		if ( localStorage['csvhorse.wrap-out'] === 'false' ) {
 			document.getElementById( 'textarea-output-wrap-button' ).classList.add( 'wrap' )
@@ -174,9 +174,17 @@ const ui = {
 
 		// Put a listener on the input textareas to store their contents in localstorage on a time-delay.
 		let recipeTimerId = 0;
-		recipeText.addEventListener("keyup", function(event) {
-			clearTimeout(recipeTimerId);
+		recipeText.addEventListener( 'keyup', function(event) {
+			clearTimeout( recipeTimerId );
 			recipeTimerId = setTimeout( ui.storage, 750 );
+		});
+
+		// Selection Change basically detects cursor movement in the recipe text
+		// area. We use this to trigger the context help display.
+		let helpTimerId = 0;
+		recipeText.addEventListener( 'selectionchange', function(event) {
+			clearTimeout( helpTimerId );
+			helpTimerId = setTimeout( contextHelp.check, 500 );
 		});
 	},
 
@@ -329,7 +337,7 @@ const ui = {
 	},
 
 	/**
-	 * Switches the UI between text and table mode
+	 * Switches the UI between text and table mode.
 	 */
 	switch: () => {
 		// Mode is determined by the text on display in the button
@@ -339,6 +347,7 @@ const ui = {
 		// Swap the UI over between the modes.
 		document.getElementById( 'textarea-output' ).classList.toggle( 'hidden' )
 		document.getElementById( 'table-scroller' ).classList.toggle( 'hidden' )
+
 		if ( ui.isCsv ) {
 			btn.innerHTML = 'CSV'
 		} else {
@@ -347,5 +356,5 @@ const ui = {
 
 		// Execute the recipe to refresh the output window.
 		csvhorse.run()
-	}
+	},
 }

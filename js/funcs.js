@@ -3,7 +3,7 @@ const funcs = {
 	 * Count function
 	 */
 	count: {
-		params: "(random) (start) ('step' [number]) ('skip' [number)",
+		params: "('random' | [starting number]) ('step' [number]) ('skip' [number]",
 		short: "A counter with controllable start, steps, and skips.",
 		long: [
 			'@count() starts from 1 and increments by 1',
@@ -345,7 +345,7 @@ const funcs = {
 	 * Generates Lorem Ipsum passages for inclusion in the CSV. Returned strings are capitalised.
 	 */
 	lorem: {
-		params: "(words) ('random')",
+		params: "(number of words) ('random') ('spread')",
 		short: "Insert strings of Lorem Ipsum text",
 		long: [
 			'@lorem() returns 5 words of lorem ipsum',
@@ -402,7 +402,7 @@ const funcs = {
 	 * @oneof(foo) => A random entry from the list in $foo variable
 	 */
 	oneof: {
-		params: "[list]",
+		params: "[list of comma-separated terms]",
 		short: "Selects a random entry from the comma-separated list",
 		long: [
 			'@oneof(a,b,c) inserts a, b, or c, decided randomly'
@@ -425,7 +425,7 @@ const funcs = {
 	},
 	
 	cycle: {
-		params: "[list]",
+		params: "[list of comma-separated terms]",
 		short: "Cycles through entries from the comma-separated list",
 		long: [
 			'@cycle(a,b,c) inserts a on one row, b on the next, then c, back to a, etc.'

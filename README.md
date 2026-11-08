@@ -8,6 +8,8 @@ Try CSVhorse online at https://csvhorse.mcglashan.net/
 
 ### version 2.0
 - Overhaul of the way recipes are written
+- Nice table view is the default working view. The CSV is hidden behind it.
+- Context help for functions, variables, and directives
 
 ### version 1.0.0
 - The two wrap settings are now properly persisted and restored from session to session.
