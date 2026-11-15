@@ -20,6 +20,9 @@ const contextHelp = {
 			let start = index
 			while ( !stoppers.includes( recipe[start] ) ) {
 				start -= 1
+				if ( start === 0 ) {
+					break
+				}
 			}
 
 			// Search that chunk for something we can provide help for.
@@ -39,6 +42,11 @@ const contextHelp = {
 			// %patterns
 			else if ( chunk.indexOf( '%' ) !== -1 ) {
 				content = contextHelp.checkForPatterns( chunk )
+			}
+
+			// Directives have no fancy characters to trigger on
+			else {
+				content = contextHelp.checkForDirectives( chunk )
 			}
 
 			if ( content ) {
@@ -90,9 +98,12 @@ const contextHelp = {
 		// Something more than a '@' means we count all the functions that match
 		// what's in the chunk so far ...
 		else {
+			// Remove () from the chunk.
+			let tchunk = chunk.replaceAll( '(', '' ).replaceAll( ')','' )
+
 			let matches = []
 			for (const [key,func] of Object.entries( funcs ) ) {
-				if ( `@${key}`.startsWith( chunk )  ) {
+				if ( `@${key}`.startsWith( tchunk )  ) {
 					matches.push( key )
 				}
 			}
@@ -114,5 +125,38 @@ const contextHelp = {
 
 		// Didn't match any functions so return a message
 		return { message: `there is no function <strong>${chunk}</strong>` }
+	},
+
+	/**
+	 * Writes context help for the directives, returning an object containing
+	 * a message to be displayed in the UI.
+	 */
+	checkForDirectives: ( chunk ) => {
+		let tchunk = chunk.trim().replaceAll( '/', '' )
+		let matches = []
+		for (const [key,func] of Object.entries( directives ) ) {
+			console.log( key, tchunk )
+			if ( key.startsWith( tchunk )  ) {
+				matches.push( key )
+			}
+		}
+		console.log( matches )
+
+		// One match is a strict directive definition
+		if ( matches.length === 1 ) {
+			return { message: `<strong>${matches[0]}(</strong> ${directives[matches[0]].params} <strong>)</strong>` }
+		}
+
+		// More 
+		else if ( matches.length > 1 ) {
+			let str = ''
+			for ( let match of matches ) {
+				str += `<strong>@${match}</strong>, \n`
+			}
+			return { message: `${str}` }
+		}
+
+		// Didn't match any functions so return null
+		return null
 	},
 }
